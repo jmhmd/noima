@@ -1,0 +1,19 @@
+<!html>
+<head>
+    <title>AIIDS</title>
+</head>
+<body>
+    <h1>AIIDS</h1>
+    <div id="onCall">
+        <% onCall.forEach(function(person, index){ %>
+            <li><%= person.name %></li>
+        <% }); %>
+    </div>
+    <div id="pagerList">
+		<% pagerList.Mercy.forEach(function(person, index){ %>
+			<li><%= person.name %>, <%= person.url %></li>
+		<% }); %>
+	</div>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+</body>
+</html>

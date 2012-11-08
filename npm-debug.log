@@ -1,0 +1,170 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/bin/node', '/usr/bin/npm', 'install', 'tidy' ]
+2 info using npm@1.1.61
+3 info using node@v0.8.9
+4 verbose read json /Users/jmhmd/Sites/jmhmd.koding.com/website/noima/package.json
+5 verbose read json /Users/jmhmd/Sites/jmhmd.koding.com/website/noima/node_modules/cheerio/package.json
+6 verbose read json /Users/jmhmd/Sites/jmhmd.koding.com/website/noima/node_modules/request/package.json
+7 verbose read json /Users/jmhmd/Sites/jmhmd.koding.com/website/noima/node_modules/express/package.json
+8 verbose read json /Users/jmhmd/Sites/jmhmd.koding.com/website/noima/node_modules/ejs/package.json
+9 verbose read json /Users/jmhmd/Sites/jmhmd.koding.com/website/noima/node_modules/jsdom/package.json
+10 verbose read json /Users/jmhmd/Sites/jmhmd.koding.com/website/noima/node_modules/htmltidy/package.json
+11 verbose read json /Users/jmhmd/Sites/jmhmd.koding.com/website/noima/package.json
+12 verbose cache add [ 'tidy', null ]
+13 silly cache add name=undefined spec="tidy" args=["tidy",null]
+14 verbose parsed url { pathname: 'tidy', path: 'tidy', href: 'tidy' }
+15 silly lockFile a78fb138-tidy tidy
+16 verbose lock tidy /Users/jmhmd/.npm/a78fb138-tidy.lock
+17 silly lockFile a78fb138-tidy tidy
+18 verbose addNamed [ 'tidy', '' ]
+19 verbose addNamed [ null, '' ]
+20 silly lockFile 1b083149-tidy tidy@
+21 verbose lock tidy@ /Users/jmhmd/.npm/1b083149-tidy.lock
+22 silly addNameRange { name: 'tidy', range: '', hasData: false }
+23 verbose url raw tidy
+24 verbose url resolving [ 'https://registry.npmjs.org/', './tidy' ]
+25 verbose url resolved https://registry.npmjs.org/tidy
+26 info trying registry request attempt 1 at 10:51:28
+27 http GET https://registry.npmjs.org/tidy
+28 http 200 https://registry.npmjs.org/tidy
+29 silly registry.get cb [ 200,
+29 silly registry.get   { vary: 'Accept',
+29 silly registry.get     server: 'CouchDB/1.2.0 (Erlang OTP/R15B)',
+29 silly registry.get     etag: '"1BUP7UTX9SYUIG3PYJBP8B9Z9"',
+29 silly registry.get     date: 'Mon, 05 Nov 2012 18:51:14 GMT',
+29 silly registry.get     'content-type': 'application/json',
+29 silly registry.get     'content-length': '1168' } ]
+30 silly addNameRange number 2 { name: 'tidy', range: '', hasData: true }
+31 silly addNameRange versions [ 'tidy', [ '0.0.1' ] ]
+32 verbose addNamed [ 'tidy', '0.0.1' ]
+33 verbose addNamed [ '0.0.1', '0.0.1' ]
+34 silly lockFile e3f81bf4-tidy-0-0-1 tidy@0.0.1
+35 verbose lock tidy@0.0.1 /Users/jmhmd/.npm/e3f81bf4-tidy-0-0-1.lock
+36 silly lockFile 89866c18-ry-npmjs-org-tidy-tidy-0-0-1-tgz https://registry.npmjs.org/tidy/-/tidy-0.0.1.tgz
+37 verbose lock https://registry.npmjs.org/tidy/-/tidy-0.0.1.tgz /Users/jmhmd/.npm/89866c18-ry-npmjs-org-tidy-tidy-0-0-1-tgz.lock
+38 verbose addRemoteTarball [ 'https://registry.npmjs.org/tidy/-/tidy-0.0.1.tgz',
+38 verbose addRemoteTarball   'ce70f54a7dd4a8685360c7e99d81b2647a50433b' ]
+39 info retry fetch attempt 1 at 10:51:28
+40 verbose fetch to= /Users/jmhmd/tmp/npm-35057/1352141488326-0.21952513349242508/tmp.tgz
+41 http GET https://registry.npmjs.org/tidy/-/tidy-0.0.1.tgz
+42 http 200 https://registry.npmjs.org/tidy/-/tidy-0.0.1.tgz
+43 silly shasum updated bytes 40960
+44 silly shasum updated bytes 9363
+45 info shasum ce70f54a7dd4a8685360c7e99d81b2647a50433b
+45 info shasum /Users/jmhmd/tmp/npm-35057/1352141488326-0.21952513349242508/tmp.tgz
+46 verbose tar unpack /Users/jmhmd/tmp/npm-35057/1352141488326-0.21952513349242508/tmp.tgz
+47 silly lockFile 04af71ab-8326-0-21952513349242508-package /Users/jmhmd/tmp/npm-35057/1352141488326-0.21952513349242508/package
+48 verbose lock /Users/jmhmd/tmp/npm-35057/1352141488326-0.21952513349242508/package /Users/jmhmd/.npm/04af71ab-8326-0-21952513349242508-package.lock
+49 silly gunzTarPerm modes [ '755', '644' ]
+50 silly gunzTarPerm extractEntry tidy.js
+51 silly gunzTarPerm extractEntry engadget_article.html
+52 silly gunzTarPerm extractEntry config
+53 silly gunzTarPerm extractEntry jquery-1.6.2.min.js
+54 silly gunzTarPerm extractEntry wscript
+55 silly gunzTarPerm extractEntry test_jsdom.js
+56 silly gunzTarPerm extractEntry package.json
+57 silly gunzTarPerm extractEntry test_tidy.js
+58 silly gunzTarPerm extractEntry node_tidy.cc
+59 verbose read json /Users/jmhmd/tmp/npm-35057/1352141488326-0.21952513349242508/package/package.json
+60 warn package.json tidy@0.0.1 No README.md file found!
+61 silly lockFile 04af71ab-8326-0-21952513349242508-package /Users/jmhmd/tmp/npm-35057/1352141488326-0.21952513349242508/package
+62 verbose from cache /Users/jmhmd/tmp/npm-35057/1352141488326-0.21952513349242508/package/package.json
+63 verbose tar pack [ '/Users/jmhmd/.npm/tidy/0.0.1/package.tgz',
+63 verbose tar pack   '/Users/jmhmd/tmp/npm-35057/1352141488326-0.21952513349242508/package' ]
+64 verbose tarball /Users/jmhmd/.npm/tidy/0.0.1/package.tgz
+65 verbose folder /Users/jmhmd/tmp/npm-35057/1352141488326-0.21952513349242508/package
+66 silly lockFile c56fccac-jmhmd-npm-tidy-0-0-1-package-tgz /Users/jmhmd/.npm/tidy/0.0.1/package.tgz
+67 verbose lock /Users/jmhmd/.npm/tidy/0.0.1/package.tgz /Users/jmhmd/.npm/c56fccac-jmhmd-npm-tidy-0-0-1-package-tgz.lock
+68 silly lockFile c56fccac-jmhmd-npm-tidy-0-0-1-package-tgz /Users/jmhmd/.npm/tidy/0.0.1/package.tgz
+69 silly lockFile c1d3cc9d-ers-jmhmd-npm-tidy-0-0-1-package /Users/jmhmd/.npm/tidy/0.0.1/package
+70 verbose lock /Users/jmhmd/.npm/tidy/0.0.1/package /Users/jmhmd/.npm/c1d3cc9d-ers-jmhmd-npm-tidy-0-0-1-package.lock
+71 silly lockFile c1d3cc9d-ers-jmhmd-npm-tidy-0-0-1-package /Users/jmhmd/.npm/tidy/0.0.1/package
+72 verbose tar unpack /Users/jmhmd/.npm/tidy/0.0.1/package.tgz
+73 silly lockFile c1d3cc9d-ers-jmhmd-npm-tidy-0-0-1-package /Users/jmhmd/.npm/tidy/0.0.1/package
+74 verbose lock /Users/jmhmd/.npm/tidy/0.0.1/package /Users/jmhmd/.npm/c1d3cc9d-ers-jmhmd-npm-tidy-0-0-1-package.lock
+75 silly gunzTarPerm modes [ '755', '644' ]
+76 silly gunzTarPerm extractEntry package.json
+77 silly gunzTarPerm extractEntry tidy.js
+78 silly gunzTarPerm extractEntry jquery-1.6.2.min.js
+79 silly gunzTarPerm extractEntry test_jsdom.js
+80 silly gunzTarPerm extractEntry test_tidy.js
+81 silly gunzTarPerm extractEntry engadget_article.html
+82 silly gunzTarPerm extractEntry config
+83 silly gunzTarPerm extractEntry wscript
+84 silly gunzTarPerm extractEntry node_tidy.cc
+85 verbose read json /Users/jmhmd/.npm/tidy/0.0.1/package/package.json
+86 silly lockFile c1d3cc9d-ers-jmhmd-npm-tidy-0-0-1-package /Users/jmhmd/.npm/tidy/0.0.1/package
+87 silly shasum updated bytes 40960
+88 silly shasum updated bytes 9391
+89 info shasum ed2caad2998885e8df0d05a76a59888368928ae5
+89 info shasum /Users/jmhmd/.npm/tidy/0.0.1/package.tgz
+90 verbose from cache /Users/jmhmd/.npm/tidy/0.0.1/package/package.json
+91 verbose chmod /Users/jmhmd/.npm/tidy/0.0.1/package.tgz 644
+92 verbose chown /Users/jmhmd/.npm/tidy/0.0.1/package.tgz [ 1032, 1032 ]
+93 silly lockFile 89866c18-ry-npmjs-org-tidy-tidy-0-0-1-tgz https://registry.npmjs.org/tidy/-/tidy-0.0.1.tgz
+94 silly lockFile e3f81bf4-tidy-0-0-1 tidy@0.0.1
+95 silly lockFile 1b083149-tidy tidy@
+96 silly resolved [ { name: 'tidy',
+96 silly resolved     version: '0.0.1',
+96 silly resolved     scripts:
+96 silly resolved      { preinstall: 'node-waf configure && node-waf clean build',
+96 silly resolved        preuninstall: 'rm -rf build/*' },
+96 silly resolved     main: 'tidy.js',
+96 silly resolved     description: 'a binding to the tidy html library',
+96 silly resolved     dependencies: { jsdom: 'latest' },
+96 silly resolved     author: { name: 'Martyn Garcia', email: 'martyn.garcia@gmail.com' },
+96 silly resolved     _id: 'tidy@0.0.1',
+96 silly resolved     readme: 'ERROR: No README.md file found!',
+96 silly resolved     dist: { shasum: 'ed2caad2998885e8df0d05a76a59888368928ae5' },
+96 silly resolved     _from: 'tidy' } ]
+97 info install tidy@0.0.1 into /Users/jmhmd/Sites/jmhmd.koding.com/website/noima
+98 info installOne tidy@0.0.1
+99 verbose from cache /Users/jmhmd/.npm/tidy/0.0.1/package/package.json
+100 info /Users/jmhmd/Sites/jmhmd.koding.com/website/noima/node_modules/tidy unbuild
+101 verbose read json /Users/jmhmd/Sites/jmhmd.koding.com/website/noima/node_modules/tidy/package.json
+102 verbose tar unpack /Users/jmhmd/.npm/tidy/0.0.1/package.tgz
+103 silly lockFile e4cf4d5a--website-noima-node-modules-tidy /Users/jmhmd/Sites/jmhmd.koding.com/website/noima/node_modules/tidy
+104 verbose lock /Users/jmhmd/Sites/jmhmd.koding.com/website/noima/node_modules/tidy /Users/jmhmd/.npm/e4cf4d5a--website-noima-node-modules-tidy.lock
+105 silly gunzTarPerm modes [ '755', '644' ]
+106 silly gunzTarPerm extractEntry package.json
+107 silly gunzTarPerm extractEntry tidy.js
+108 silly gunzTarPerm extractEntry jquery-1.6.2.min.js
+109 silly gunzTarPerm extractEntry test_jsdom.js
+110 silly gunzTarPerm extractEntry test_tidy.js
+111 silly gunzTarPerm extractEntry engadget_article.html
+112 silly gunzTarPerm extractEntry config
+113 silly gunzTarPerm extractEntry wscript
+114 silly gunzTarPerm extractEntry node_tidy.cc
+115 verbose read json /Users/jmhmd/Sites/jmhmd.koding.com/website/noima/node_modules/tidy/package.json
+116 silly lockFile e4cf4d5a--website-noima-node-modules-tidy /Users/jmhmd/Sites/jmhmd.koding.com/website/noima/node_modules/tidy
+117 info preinstall tidy@0.0.1
+118 verbose unsafe-perm in lifecycle true
+119 silly exec sh "-c" "node-waf configure && node-waf clean build"
+120 silly sh,-c,node-waf configure && node-waf clean build,/Users/jmhmd/Sites/jmhmd.koding.com/website/noima/node_modules/tidy spawning
+121 info tidy@0.0.1 Failed to exec preinstall script
+122 info /Users/jmhmd/Sites/jmhmd.koding.com/website/noima/node_modules/tidy unbuild
+123 verbose from cache /Users/jmhmd/Sites/jmhmd.koding.com/website/noima/node_modules/tidy/package.json
+124 info preuninstall tidy@0.0.1
+125 verbose unsafe-perm in lifecycle true
+126 silly exec sh "-c" "rm -rf build/*"
+127 silly sh,-c,rm -rf build/*,/Users/jmhmd/Sites/jmhmd.koding.com/website/noima/node_modules/tidy spawning
+128 info uninstall tidy@0.0.1
+129 verbose true,/Users/jmhmd/Sites/jmhmd.koding.com/website/noima/node_modules,/Users/jmhmd/Sites/jmhmd.koding.com/website/noima/node_modules unbuild tidy@0.0.1
+130 info postuninstall tidy@0.0.1
+131 error tidy@0.0.1 preinstall: `node-waf configure && node-waf clean build`
+131 error `sh "-c" "node-waf configure && node-waf clean build"` failed with 1
+132 error Failed at the tidy@0.0.1 preinstall script.
+132 error This is most likely a problem with the tidy package,
+132 error not with npm itself.
+132 error Tell the author that this fails on your system:
+132 error     node-waf configure && node-waf clean build
+132 error You can get their info via:
+132 error     npm owner ls tidy
+132 error There is likely additional logging output above.
+133 error System Linux 2.6.32-379.5.1.lve1.1.9.6.1.el6.x86_64
+134 error command "/usr/bin/node" "/usr/bin/npm" "install" "tidy"
+135 error cwd /Users/jmhmd/Sites/jmhmd.koding.com/website/noima
+136 error node -v v0.8.9
+137 error npm -v 1.1.61
+138 error code ELIFECYCLE
+139 verbose exit [ 1, true ]
