@@ -46,29 +46,39 @@ function getGroups() {
 									
 				//console.log(pagerList);
 				
-				pageSomeone();
+				pageSomeone('410-894-7332', 'test', 'note');
 				
 			});
 			
 		});
 }
 
-function pageSomeone(){
+function pageSomeone(To, From, Note){
+	// To: takes valid name in "last, first" format, last 4 digits, or full pager number with or without hyphens
+	// Note: maxlength 240?
 	request.get({
 					url: 'https://www.amion.com/cgi-bin/ocs',
 					qs: { 
 						File: file,
 						Page: 'Alphapg', 
-						Rsel: '5', 
+						//Rsel: '5', 
 						Syr: '2012',
 						Apgref: '1',
-						From: 'Jasontest',
-						Enote: 'Hey buddy'
+						ApgNmNum: To,
+						From: From,
+						Enote: Note
 					}
 				},
 				function( error, response, body ){
-					console.log(response.statusCode);
-					console.log(body);
+					if ( response.statusCode !== 200 ) {
+						console.log( error );
+					} else {
+						if ( body.indexOf('Accepted') === -1 ) {
+							console.log( body );
+						} else { // all's well, page sent
+							console.log( 'Page sent to '+To+'.' );
+						}
+					}
 				}
 	);
 }
