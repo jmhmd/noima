@@ -10,28 +10,73 @@ var app = express();
 app.use(app.router);
 app.use(express.static(pub));
 app.use(express.errorHandler());
+app.use(express.bodyParser());
 
 app.engine('.html', require('ejs').__express);
 app.set('view engine', 'html');
 
+//-----------Application logic --------------//
+
+var file = "";
+var onCall = [];
+var pagerList = {};
+
+
+//-----------Functions----------------//
+function refreshFile(){
+	request.post( 'http://amion.com/cgi-bin/ocs', {form: {Login: 'mercymed'}},
+		function( error, response, body ){
+			var $ = cheerio.load(body);
+				
+			// set file, I think this is like a session cookie?
+			file = $('input[name="File"]').attr('value');
+							
+		});
+}
+
+//-----------Routing ------------------------//
+
+app.post('/sendPage', function(req, res){
+	// To: takes valid name in "last, first" format, last 4 digits, or full pager number with or without hyphens
+	// From: free text, spaces replaced by periods
+	// Note: maxlength 240?
+	console.log(req.param);
+	request.get({
+					url: 'https://www.amion.com/cgi-bin/ocs',
+					qs: { 
+						File: file,
+						Page: 'Alphapg', 
+						//Rsel: '5', 
+						Syr: '2012',
+						Apgref: '1',
+						ApgNmNum: req.param.To,
+						From: req.param.From,
+						Enote: req.param.Note
+					}
+				},
+				function( error, response, body ){
+					if ( response.statusCode !== 200 ) {
+						console.log( error );
+						res.send({ success: false, msg: error });
+					} else {
+						if ( typeof body === 'undefined' || body.indexOf('Accepted') === -1 ) {
+							console.log( body );
+							res.send({ success: false, msg: error });
+						} else { // all's well, page sent
+							console.log( 'Page sent to '+To+'.' );
+							res.send({ success: true, msg: 'Page sent to '+To+'.' });
+						}
+					}
+				}
+	);
+});
+
 app.get('/', function(req, res){
     
-    var file = "";
-    var onCall = [];
-	var pagerList = {};
-	
-	function refreshFile(){
-		request.post( 'http://amion.com/cgi-bin/ocs', {form: {Login: 'mercymed'}},
-            function( error, response, body ){
-                var $ = cheerio.load(body);
-                    
-                // set file, I think this is like a session cookie?
-                file = $('input[name="File"]').attr('value');
-                                
-            });
-	}
-    
     function getOnCall(){
+		
+		onCall = []; // clear list if any loaded already
+		
         request.post( 'http://amion.com/cgi-bin/ocs', {form: {Login: 'mercymed'}},
             function( error, response, body ){
                 //console.log(body);
@@ -64,22 +109,6 @@ app.get('/', function(req, res){
 						onCall.push(person);
 					});
 					
-					/*
-					var names = rows.map( function(index,el) {return $(el).find('a.plain').find('nobr').text();});
-					var service = rows.map( function(index,el) {return $(el).find('td').eq(0).text();});
-					var training = rows.map( function(index,el) {return $(el).find('td').eq(4).text();});
-					var contact = rows.map( function(index,el) {
-						var td = $(el).find('td').eq(5);
-						if (td.find('a') !== 0) {
-							return [td.find('a').text(), td.find('a').attr('href')]; 
-						} else {
-							return [td.find('nobr').text(), false];
-						}
-					});
-					*/
-					//names.shift();
-					//service.shift();
-					
 					getPagerList();
                     
                     //res.render('index', {names: names, service: service, training: training, contact: contact});
@@ -91,7 +120,10 @@ app.get('/', function(req, res){
     
     function getPagerList(){
     // TODO: figure out if Syr needs to change with calendar or academic year
+	// can eventually skip this step for long running server as long as year is the same
     
+		pagerList = {}; // clear list if any loaded
+		
         request.get( 'https://www.amion.com/cgi-bin/ocs?File='+ file +'&Syr=2012&Page=Pgrsel&Rsel=-1',
 			function( error, response, body ){
 				//console.log(body);
