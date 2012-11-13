@@ -7,10 +7,11 @@ var express = require('express'),
 // setup middleware
 
 var app = express();
+app.use(express.bodyParser());
 app.use(app.router);
 app.use(express.static(pub));
 app.use(express.errorHandler());
-app.use(express.bodyParser());
+
 
 app.engine('.html', require('ejs').__express);
 app.set('view engine', 'html');
@@ -40,7 +41,12 @@ app.post('/sendPage', function(req, res){
 	// To: takes valid name in "last, first" format, last 4 digits, or full pager number with or without hyphens
 	// From: free text, spaces replaced by periods
 	// Note: maxlength 240?
-	console.log(req.param);
+	console.log(req.body);
+	
+	var To = req.param('To'),
+		From = req.param('From'),
+		Note = req.param('Note');
+	
 	request.get({
 					url: 'https://www.amion.com/cgi-bin/ocs',
 					qs: { 
@@ -49,9 +55,9 @@ app.post('/sendPage', function(req, res){
 						//Rsel: '5', 
 						Syr: '2012',
 						Apgref: '1',
-						ApgNmNum: req.param.To,
-						From: req.param.From,
-						Enote: req.param.Note
+						ApgNmNum: To,
+						From: From,
+						Enote: Note
 					}
 				},
 				function( error, response, body ){
@@ -60,8 +66,8 @@ app.post('/sendPage', function(req, res){
 						res.send({ success: false, msg: error });
 					} else {
 						if ( typeof body === 'undefined' || body.indexOf('Accepted') === -1 ) {
-							console.log( body );
-							res.send({ success: false, msg: error });
+							console.log('Page not sent');
+							res.send({ success: false, msg: 'Page could not be sent.' });
 						} else { // all's well, page sent
 							console.log( 'Page sent to '+To+'.' );
 							res.send({ success: true, msg: 'Page sent to '+To+'.' });

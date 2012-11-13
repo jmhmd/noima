@@ -22,6 +22,7 @@
 				<form id="pageForm">
 					<fieldset>
 						<legend>Send a Page</legend>
+						<div id="pageAlert" class="alert" style="display:none"></div>
 						<label>To:</label>
 						<input id="To" type="text">
 						<label>From:</label>
@@ -30,7 +31,6 @@
 						<textarea id="Note" rows="3"></textarea>
 						<div class="form-actions">
 							<button type="submit" class="btn btn-primary" style="float:left">Send</button>
-							<div id="pageAlert" class="alert" style="display:none; margin-left:50px;"></div>
 						</div>
 					</fieldset>
 				</form>
@@ -63,23 +63,25 @@ pageForm.bind('submit', function(e) {
 	e.preventDefault();
 	
 	var params = {
-		To: pageForm.find('input#Note').val(),
+		To: pageForm.find('input#To').val(),
 		From: pageForm.find('input#From').val(),
 		Note: pageForm.find('textarea#Note').val()
 	};
+	
+	console.log(params);
 	
 	$.post('/sendPage', params, function(response) {
 		if(response.success) {
 			pageAlert
 				.removeClass('alert-error')
 				.addClass('alert-success')
-				.text(msg)
+				.text(response.msg)
 				.fadeIn().delay(5000).fadeOut();
 		} else {
 			pageAlert
 				.removeClass('alert-success')
 				.addClass('alert-error')
-				.text(msg)
+				.text(response.msg)
 				.fadeIn().delay(5000).fadeOut();
 		}
 	}, 'json');
