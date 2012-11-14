@@ -8,6 +8,13 @@
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 	
+	<style type="text/css">
+	.dropdown-menu .active > a, .dropdown-menu .active > a:hover {
+		background-color: #33b4f5;
+		background-image: linear-gradient(to bottom, #33bbff, #33aae6);
+	}
+	</style>
+	
 </head>
 <body>
 <div class="container">
@@ -24,7 +31,7 @@
 						<legend>Send a Page</legend>
 						<div id="pageAlert" class="alert" style="display:none"></div>
 						<label>To:</label>
-						<input id="To" type="text">
+						<input id="To" type="text" autocomplete="off">
 						<label>From:</label>
 						<input id="From" type="text">
 						<label>Message:</label>
@@ -53,11 +60,13 @@
 	</div>-->
 	
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 $(function() {
 
 var pageForm = $('#pageForm'),
-	pageAlert = $('#pageAlert');
+	pageAlert = $('#pageAlert'),
+	nameList = <%- JSON.stringify(nameList) %>;
 	
 pageForm.bind('submit', function(e) {
 	e.preventDefault();
@@ -86,6 +95,14 @@ pageForm.bind('submit', function(e) {
 		}
 	}, 'json');
 });
+
+// To input typeahead
+$('#To').typeahead({
+	source: nameList
+});
+
+// immediately bring focus to "To" field
+$('#To').focus();
 
 });
 </script>

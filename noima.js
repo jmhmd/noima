@@ -21,6 +21,7 @@ app.set('view engine', 'html');
 var file = "";
 var onCall = [];
 var pagerList = {};
+var nameList = [];
 
 
 //-----------Functions----------------//
@@ -129,6 +130,7 @@ app.get('/', function(req, res){
 	// can eventually skip this step for long running server as long as year is the same
     
 		pagerList = {}; // clear list if any loaded
+		nameList = [];
 		
         request.get( 'https://www.amion.com/cgi-bin/ocs?File='+ file +'&Syr=2012&Page=Pgrsel&Rsel=-1',
 			function( error, response, body ){
@@ -154,6 +156,9 @@ app.get('/', function(req, res){
 							} else {
 								var s = $(option).attr('value').split('*');
 								pagerList[label].push({url:s[0],num:s[1],name:s[2]});
+								if ( typeof s[2] !== 'undefined' ) {
+									nameList.push( s[2] );
+								}
 							}
 						});
 					});
@@ -169,7 +174,7 @@ app.get('/', function(req, res){
 		//console.log(onCall);
 		//console.log(pagerList);
 		
-		res.render('index', { onCall: onCall, pagerList: pagerList });
+		res.render('index', { onCall: onCall, pagerList: pagerList, nameList: nameList });
 	}
 	
 	function init() {

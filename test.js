@@ -26,6 +26,8 @@ function getGroups() {
 				
 				var selects = [];
 				
+				var names = [];
+				
 				for (var i = 1; i < 10; i++) {
 					selects.push($('[name="Rsel'+i+'"]').find('option'));
 				}
@@ -40,13 +42,16 @@ function getGroups() {
 						} else {
 							var s = $(option).attr('value').split('*');
 							pagerList[label].push({url:s[0],num:s[1],name:s[2]});
+							if ( typeof s[2] !== 'undefined' ) {
+								names.push( s[2] );
+							}
 						}
 					});
 				});
 									
-				//console.log(pagerList);
+				console.log(names);
 				
-				pageSomeone('410-894-7332', 'test', 'note');
+				//pageSomeone('410-894-7332', 'test', 'note');
 				
 			});
 			
