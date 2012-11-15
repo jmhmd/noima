@@ -25,14 +25,15 @@ var nameList = [];
 
 
 //-----------Functions----------------//
-function refreshFile(){
+function refreshFile(callback){
 	request.post( 'http://amion.com/cgi-bin/ocs', {form: {Login: 'mercymed'}},
 		function( error, response, body ){
 			var $ = cheerio.load(body);
 				
 			// set file, I think this is like a session cookie?
 			file = $('input[name="File"]').attr('value');
-							
+			
+			callback();
 		});
 }
 
@@ -42,13 +43,16 @@ app.post('/sendPage', function(req, res){
 	// To: takes valid name in "last, first" format, last 4 digits, or full pager number with or without hyphens
 	// From: free text, spaces replaced by periods
 	// Note: maxlength 240?
+	file="oifenosif";
 	console.log(req.body);
 	
-	var To = req.param('To'),
-		From = req.param('From'),
-		Note = req.param('Note');
-	
-	request.get({
+	function sendPage() {
+		var To = req.param('To'),
+			From = req.param('From'),
+			Note = req.param('Note'),
+			retry = 0;
+		
+		request.get({
 					url: 'https://www.amion.com/cgi-bin/ocs',
 					qs: { 
 						File: file,
@@ -67,15 +71,19 @@ app.post('/sendPage', function(req, res){
 						res.send({ success: false, msg: error });
 					} else {
 						if ( typeof body === 'undefined' || body.indexOf('Accepted') === -1 ) {
-							console.log('Page not sent');
-							res.send({ success: false, msg: 'Page could not be sent.' });
+							console.log('Page not sent. Refreshing file...');
+							refreshFile(sendPage);
+							//res.send({ success: false, msg: 'Page could not be sent. Retrying...' });
 						} else { // all's well, page sent
 							console.log( 'Page sent to '+To+'.' );
 							res.send({ success: true, msg: 'Page sent to '+To+'.' });
 						}
 					}
 				}
-	);
+		);
+	}
+	
+	sendPage();
 });
 
 app.get('/', function(req, res){
