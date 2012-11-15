@@ -8,6 +8,8 @@ var express = require('express'),
 
 var app = express();
 app.use(express.bodyParser());
+app.use(express.cookieParser());
+app.use(express.session({ secret: "hello my friend" }));
 app.use(app.router);
 app.use(express.static(pub));
 app.use(express.errorHandler());
@@ -18,7 +20,7 @@ app.set('view engine', 'html');
 
 //-----------Application logic --------------//
 
-var file = "";
+//var file = "";
 var onCall = [];
 var pagerList = {};
 var nameList = [];
@@ -31,7 +33,7 @@ function refreshFile(callback){
 			var $ = cheerio.load(body);
 				
 			// set file, I think this is like a session cookie?
-			file = $('input[name="File"]').attr('value');
+			req.session.file = $('input[name="File"]').attr('value');
 			
 			callback();
 		});
@@ -54,7 +56,7 @@ app.post('/sendPage', function(req, res){
 		request.get({
 					url: 'https://www.amion.com/cgi-bin/ocs',
 					qs: { 
-						File: file,
+						File: req.session.file,
 						Page: 'Alphapg', 
 						//Rsel: '5', 
 						Syr: '2012',
@@ -90,6 +92,7 @@ app.get('/', function(req, res){
     function getOnCall(){
 		
 		onCall = []; // clear list if any loaded already
+		req.session.file = "";
 		
         request.post( 'http://amion.com/cgi-bin/ocs', {form: {Login: 'mercymed'}},
             function( error, response, body ){
@@ -100,7 +103,7 @@ app.get('/', function(req, res){
                     var $ = cheerio.load(html);
 				
 					// set file, I think this is like a session cookie?
-					file = $('input[name="File"]').attr('value');
+					req.session.file = $('input[name="File"]').attr('value');
 					
 					// get rows from table
 					var rows = $('table').eq(1).find('tr');
@@ -139,7 +142,7 @@ app.get('/', function(req, res){
 		pagerList = {}; // clear list if any loaded
 		nameList = [];
 		
-        request.get( 'https://www.amion.com/cgi-bin/ocs?File='+ file +'&Syr=2012&Page=Pgrsel&Rsel=-1',
+        request.get( 'https://www.amion.com/cgi-bin/ocs?File='+ req.session.file +'&Syr=2012&Page=Pgrsel&Rsel=-1',
 			function( error, response, body ){
 				//console.log(body);
 				
