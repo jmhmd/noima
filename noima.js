@@ -43,7 +43,6 @@ app.post('/sendPage', function(req, res){
 	// To: takes valid name in "last, first" format, last 4 digits, or full pager number with or without hyphens
 	// From: free text, spaces replaced by periods
 	// Note: maxlength 240?
-	file="oifenosif";
 	console.log(req.body);
 	
 	function sendPage() {
