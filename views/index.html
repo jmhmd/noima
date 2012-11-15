@@ -66,27 +66,34 @@ $(function() {
 
 var pageForm = $('#pageForm'),
 	pageAlert = $('#pageAlert'),
+	pageNote = $('textarea#Note'),
+	pageTo = $('input#To'),
+	pageFrom = $('input#From'),
 	nameList = <%- JSON.stringify(nameList) %>;
 	
 pageForm.bind('submit', function(e) {
 	e.preventDefault();
 	
 	var params = {
-		To: pageForm.find('input#To').val(),
-		From: pageForm.find('input#From').val(),
-		Note: pageForm.find('textarea#Note').val()
+		To: pageTo.val(),
+		From: pageFrom.val(),
+		Note: pageNote.val()
 	};
 	
 	console.log(params);
 	
 	$.post('/sendPage', params, function(response) {
 		if(response.success) {
+		// page successful
 			pageAlert
 				.removeClass('alert-error')
 				.addClass('alert-success')
 				.text(response.msg)
 				.fadeIn().delay(5000).fadeOut();
+			pageNote.val('');
+			pageTo.val('').focus();
 		} else {
+		// page unsuccessful
 			pageAlert
 				.removeClass('alert-success')
 				.addClass('alert-error')
