@@ -27,7 +27,7 @@ var nameList = [];
 
 
 //-----------Functions----------------//
-function refreshFile(callback){
+function refreshFile(req, callback){
 	request.post( 'http://amion.com/cgi-bin/ocs', {form: {Login: 'mercymed'}},
 		function( error, response, body ){
 			var $ = cheerio.load(body);
@@ -72,9 +72,14 @@ app.post('/sendPage', function(req, res){
 						res.send({ success: false, msg: error });
 					} else {
 						if ( typeof body === 'undefined' || body.indexOf('Accepted') === -1 ) {
-							console.log('Page not sent. Refreshing file...');
-							refreshFile(sendPage);
-							//res.send({ success: false, msg: 'Page could not be sent. Retrying...' });
+							if ( req.session.retry === 1 ) {
+								req.session.retry = 0;
+								res.send({ success: false, msg: 'Page could not be sent.' });
+							} else {
+								console.log('Page not sent. Refreshing file...');
+								req.session.retry = 1;
+								refreshFile(req, sendPage);
+							}
 						} else { // all's well, page sent
 							console.log( 'Page sent to '+To+'.' );
 							res.send({ success: true, msg: 'Page sent to '+To+'.' });
@@ -112,12 +117,12 @@ app.get('/', function(req, res){
 										
 					rows.each(function(index, row) {
 						var person = {};
-						person.name = $(row).find('a.plain').find('nobr').text();
+						person.name = $(row).find('a.plain').find('nobr').text().trim().replace(/(\r\n|\n|\r)/gm," ");
 						person.service = $(row).find('td').eq(0).text();
 						person.training = $(row).find('td').eq(4).text();
 						var contactTD = $(row).find('td').eq(5);
 						person.contact = contactTD.find('a') !== 0 ? {
-								number: contactTD.find('a').text(),
+								number: contactTD.find('a').text().trim(),
 								link: contactTD.find('a').attr('href')
 							} : {
 								number: contactTD.find('a').text(),

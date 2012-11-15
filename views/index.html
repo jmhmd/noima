@@ -10,8 +10,22 @@
 	
 	<style type="text/css">
 	.dropdown-menu .active > a, .dropdown-menu .active > a:hover {
-		background-color: #33b4f5;
-		background-image: linear-gradient(to bottom, #33bbff, #33aae6);
+		background-color: #D2EDFA;
+		background-image: none;
+	}
+	tr.inverse-well { 
+		border: 1px solid #DDDDDD;
+		border-radius: 4px 4px 4px 4px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.055);
+		display: table-row;
+		line-height: 20px;
+		padding: 4px;
+		transition: all 0.2s ease-in-out 0s;
+		background: white;
+	}
+	.table th, .table td { 
+		border: none;
+		vertical-align: middle;
 	}
 	</style>
 	
@@ -19,12 +33,12 @@
 <body>
 <div class="container">
 	<div class="row">
-		<div class="span9">
+		<div class="span12">
 			<h1>AIIDS</h1>
 		</div>
 	</div>
 	<div class="row">
-		<div class="span6">
+		<div class="span4">
 			<div id="formContainer">
 				<form id="pageForm">
 					<fieldset>
@@ -43,8 +57,27 @@
 				</form>
 			</div>
 		</div>
-		<div class="span3">
-			<p>I'm other stuff out here like the call list</p>
+		<div class="span8">
+			<h4>On Call</h4>
+			<div id="onCall" class="well">
+				<table class="table">
+				<tbody>
+				<% onCall.forEach(function(person, index){ %>
+					<tr>
+						<th colspan="4"><%= person.service %></th>
+					</tr>
+					<tr class="inverse-well">
+						<td><%= person.name %></td>
+						<td><%= person.training %></td>
+						<td><%= person.contact.number %></td>
+						<td><button class="btn btn-mini pageButton" pageName="<%= person.name %>">Page</button></td>
+					</tr>
+				<% }); %>
+				</tbody>
+				</table>
+				
+				</ul>
+			</div>
 		</div>
 	</div>
 </div>
@@ -69,7 +102,8 @@ var pageForm = $('#pageForm'),
 	pageNote = $('textarea#Note'),
 	pageTo = $('input#To'),
 	pageFrom = $('input#From'),
-	nameList = <%- JSON.stringify(nameList) %>;
+	nameList = <%- JSON.stringify(nameList) %>,
+	pageButton = $('.pageButton');
 	
 pageForm.bind('submit', function(e) {
 	e.preventDefault();
@@ -101,6 +135,17 @@ pageForm.bind('submit', function(e) {
 				.fadeIn().delay(5000).fadeOut();
 		}
 	}, 'json');
+});
+
+pageButton.bind('click', function(e) {
+	var pageName = $(this).attr('pageName');
+	console.log(pageName);
+	pageTo.val(pageName);
+	if( pageFrom.val() === '' ) {
+		pageFrom.focus();
+	} else {
+		pageNote.focus().select();
+	}
 });
 
 // To input typeahead
