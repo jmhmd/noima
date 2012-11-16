@@ -1,0 +1,15 @@
+{
+  "name": "noima",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": "3.0.x",
+	"cheerio": "0.10.x",
+	"ejs": "0.8.x",
+	"htmltidy": "0.0.2",
+	"request": "2.11.x"
+  },
+  "engines": {
+    "node": "0.8.x",
+    "npm": "1.1.x"
+  }
+}
