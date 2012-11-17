@@ -27,6 +27,9 @@
 		border: none;
 		vertical-align: middle;
 	}
+	.table th {
+		padding-left: 0px;
+	}
 	</style>
 	
 </head>
@@ -62,17 +65,21 @@
 			<div id="onCall" class="well">
 				<table class="table">
 				<tbody>
-				<% onCall.forEach(function(person, index){ %>
+				<% for (var key in onCallTeams) {
+					var team = onCallTeams[key]; %>
 					<tr>
-						<th colspan="4"><%= person.service %></th>
+						<th colspan="4"><%= team.name %></th>
 					</tr>
-					<tr class="inverse-well">
+					<% if(team.people) {
+						team.people.forEach(function(person, index){ %>
+						<tr class="inverse-well">
 						<td><%= person.name %></td>
 						<td><%= person.training %></td>
 						<td><%= person.contact.number %></td>
 						<td><button class="btn btn-mini pageButton" pageName="<%= person.name %>">Page</button></td>
 					</tr>
-				<% }); %>
+					<% }); } %>
+				<% }; %>
 				</tbody>
 				</table>
 				

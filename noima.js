@@ -93,6 +93,8 @@ app.post('/sendPage', function(req, res){
 });
 
 app.get('/', function(req, res){
+	
+	var onCallTeams;
     
     function getOnCall(){
 		
@@ -104,6 +106,8 @@ app.get('/', function(req, res){
                 //console.log(body);
                 
                 tidy(body, function(err,html){
+				
+					html = html.replace(/(\r\n|\n|\r)/gm," "); // remove carriage returns, line endings
                     
                     var $ = cheerio.load(html);
 				
@@ -117,8 +121,8 @@ app.get('/', function(req, res){
 										
 					rows.each(function(index, row) {
 						var person = {};
-						person.name = $(row).find('a.plain').find('nobr').text().trim().replace(/(\r\n|\n|\r)/gm," ");
-						person.service = $(row).find('td').eq(0).text();
+						person.name = $(row).find('a.plain').find('nobr').text().trim();
+						person.service = $(row).find('td').eq(0).text().replace(/\s+/g, " "); // remove nbsp;
 						person.training = $(row).find('td').eq(4).text();
 						var contactTD = $(row).find('td').eq(5);
 						person.contact = contactTD.find('a') !== 0 ? {
@@ -130,6 +134,53 @@ app.get('/', function(req, res){
 							};
 						onCall.push(person);
 					});
+					
+					function assignService(person, team) {
+						if( person.service.indexOf('Med '+team) > -1 ||
+							person.service.indexOf('Resident '+team) > -1 ) {
+							return true;
+						};
+					};
+					
+					// group onCall by service
+					onCallTeams = {
+							MAO: {
+								name: "MAO",
+								people: onCall.filter(function(person){ if(person.service.indexOf('MAO') !== -1) return true; })
+							},
+							medA: { 
+								name: "Med A",
+								people: onCall.filter(function(person){ return assignService(person,'A'); })
+							},
+							medB: {
+								name: "Med B",
+								people: onCall.filter(function(person){ return assignService(person,'B'); })
+							},
+							medC: {
+								name: "Med C",
+								people: onCall.filter(function(person){ return assignService(person,'C'); })
+							},
+							medY: {
+								name: "Med Y",
+								people: onCall.filter(function(person){ return assignService(person,'Y'); })
+							},
+							medX: {
+								name: "Med X",
+								people: onCall.filter(function(person){ return assignService(person,'X'); })
+							},
+							dayFloat: {
+								name: "Day Float",
+								people: onCall.filter(function(person){ if(person.service.indexOf('Day Float') !== -1) return true; })
+							},
+							nightFloat: {
+								name: "Night Float",
+								people: onCall.filter(function(person){ if(person.service.indexOf('NF Intern') !== -1) return true; })
+							},
+							hospitalist: {
+								name: "Daytime Hospitalist",
+								people: onCall.filter(function(person){ if(person.service.indexOf('Hospitalist') !== -1) return true; })
+							}
+						};
 					
 					getPagerList();
                     
@@ -188,8 +239,9 @@ app.get('/', function(req, res){
     function renderPage() {
 		//console.log(onCall);
 		//console.log(pagerList);
+		console.log(onCallTeams);
 		
-		res.render('index', { onCall: onCall, pagerList: pagerList, nameList: nameList });
+		res.render('index', { onCall: onCall, onCallTeams: onCallTeams, pagerList: pagerList, nameList: nameList });
 	}
 	
 	function init() {
