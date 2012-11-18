@@ -209,6 +209,11 @@ function getPagerList(req, res, next){
 		});
 }
 
+function buildDate(req, res, next) {
+	req.date = day+'/'+month+'/'+year;
+	next();
+}
+
 //-----------Routing ------------------------//
 
 app.post('/sendPage', function(req, res){
@@ -262,11 +267,16 @@ app.post('/sendPage', function(req, res){
 	sendPage();
 });
 
-app.get('/onCall', function(req,res) {
-	
+app.get('/onCall/:day/:month/:year', buildDate, getOnCall, function(req,res) {
+	res.send({onCall: req.onCall, onCallTeams: req.onCallTeams});
 });
 
 app.get('/', refreshFile, getOnCall, getPagerList, function(req, res) {
+// Plow through all these functions to init the app, get all the basic
+// information to display the page. Will need to figure out what can
+// be cached in-app vs. client side in the future to reduce requests
+// to amion.com
+	
 	
 	//console.log(pagerList);
 	//console.log(onCallTeams);

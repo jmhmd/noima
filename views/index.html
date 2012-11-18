@@ -34,6 +34,9 @@
 		border: 0px;
 		margin-bottom: 0px;
 	}
+	#datePicker {
+		margin-left: 100px;
+	}
 	</style>
 	
 </head>
@@ -65,7 +68,10 @@
 			</div>
 		</div>
 		<div class="span7">
-			<legend class="noborder">On Call</legend>
+			<legend class="noborder">
+				On Call
+				<span id="datePicker" class="muted"><span id="dateArrowLeft" class="large"><</span> Today <span id="dateArrowRight" class="large">></span></span>
+			</legend>
 			<div id="onCall" class="well">
 				<table class="table">
 				<tbody>
@@ -121,7 +127,15 @@ var pageForm = $('#pageForm'),
 	pageTo = $('input#To'),
 	pageFrom = $('input#From'),
 	nameList = <%- JSON.stringify(nameList) %>,
-	pageButton = $('.pageButton');
+	pageButton = $('.pageButton'),
+	day,
+	month,
+	year;
+	
+var now = new Date();
+day = now.getDate().toString();
+month = now.getMonth().toString();
+year = now.getFullYear().toString().substr(-2);
 	
 pageForm.bind('submit', function(e) {
 	e.preventDefault();
@@ -164,6 +178,11 @@ pageButton.bind('click', function(e) {
 	} else {
 		pageNote.focus().select();
 	}
+});
+
+$('#dateArrowLeft').bind('click', function(e) {
+	
+	$.get('/
 });
 
 // To input typeahead
