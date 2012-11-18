@@ -125,11 +125,11 @@ app.get('/', function(req, res){
 						person.service = $(row).find('td').eq(0).text().replace(/\s+/g, " "); // remove nbsp;
 						person.training = $(row).find('td').eq(4).text();
 						var contactTD = $(row).find('td').eq(5);
-						person.contact = contactTD.find('a') !== 0 ? {
+						person.contact = contactTD.find('a').length !== 0 ? {
 								number: contactTD.find('a').text().trim(),
 								link: contactTD.find('a').attr('href')
 							} : {
-								number: contactTD.find('a').text(),
+								number: contactTD.find('nobr').text(),
 								link: false
 							};
 						onCall.push(person);
@@ -174,7 +174,7 @@ app.get('/', function(req, res){
 							},
 							nightFloat: {
 								name: "Night Float",
-								people: onCall.filter(function(person){ if(person.service.indexOf('NF Intern') !== -1) return true; })
+								people: onCall.filter(function(person){ if(person.service.indexOf('NF Intern') !== -1 || person.service.indexOf('Overnight') !== -1) return true; })
 							},
 							hospitalist: {
 								name: "Daytime Hospitalist",
@@ -237,9 +237,9 @@ app.get('/', function(req, res){
     }
     
     function renderPage() {
-		//console.log(onCall);
+		console.log(onCall);
 		//console.log(pagerList);
-		console.log(onCallTeams);
+		//console.log(onCallTeams);
 		
 		res.render('index', { onCall: onCall, onCallTeams: onCallTeams, pagerList: pagerList, nameList: nameList });
 	}

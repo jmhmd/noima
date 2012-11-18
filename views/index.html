@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-    <title>AIIDS</title>
+    <title>Better Amion</title>
 	<link href="bootstrap/css/bootstrap.css" rel="stylesheet">
 	
 	<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -30,6 +30,10 @@
 	.table th {
 		padding-left: 0px;
 	}
+	legend .noborder {
+		border: 0px;
+		margin-bottom: 0px;
+	}
 	</style>
 	
 </head>
@@ -37,31 +41,31 @@
 <div class="container">
 	<div class="row">
 		<div class="span12">
-			<h1>AIIDS</h1>
+			<h1>Better AMiON</h1>
 		</div>
 	</div>
 	<div class="row">
-		<div class="span4">
+		<div class="span5">
 			<div id="formContainer">
 				<form id="pageForm">
 					<fieldset>
 						<legend>Send a Page</legend>
 						<div id="pageAlert" class="alert" style="display:none"></div>
 						<label>To:</label>
-						<input id="To" type="text" autocomplete="off">
+						<input id="To" type="text" autocomplete="off" class="span5">
 						<label>From:</label>
-						<input id="From" type="text">
+						<input id="From" type="text" class="span5">
 						<label>Message:</label>
-						<textarea id="Note" rows="3"></textarea>
+						<textarea id="Note" rows="3" class="span5"></textarea>
 						<div class="form-actions">
-							<button type="submit" class="btn btn-primary" style="float:left">Send</button>
+							<button type="submit" class="btn btn-primary span4" style="float:left">Send</button>
 						</div>
 					</fieldset>
 				</form>
 			</div>
 		</div>
-		<div class="span8">
-			<h4>On Call</h4>
+		<div class="span7">
+			<legend class="noborder">On Call</legend>
 			<div id="onCall" class="well">
 				<table class="table">
 				<tbody>
@@ -73,10 +77,17 @@
 					<% if(team.people) {
 						team.people.forEach(function(person, index){ %>
 						<tr class="inverse-well">
-						<td><%= person.name %></td>
+						<td><%= person.name %>&nbsp;&nbsp;<small class="muted"><%= person.service %></small></td>
 						<td><%= person.training %></td>
-						<td><%= person.contact.number %></td>
-						<td><button class="btn btn-mini pageButton" pageName="<%= person.name %>">Page</button></td>
+						<td>
+							<% if ( person.contact.number.indexOf("UMMS") === -1 ) { %>
+								<span class="muted">b</span><% } %><%= person.contact.number %>
+						</td>
+						<td>
+							<% if ( person.contact.number.indexOf("UMMS") === -1 ) { %>
+								<button class="btn btn-mini pageButton" pageName="<%= person.name %>">Page</button>
+							<% } %>
+						</td>
 					</tr>
 					<% }); } %>
 				<% }; %>
