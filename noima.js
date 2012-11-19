@@ -54,18 +54,17 @@ function getOnCall(req, res, next) {
 		onCall = [],
 		date = (typeof req.date !== 'undefined') ? req.date : 'today',
 		$;
-		
-	date = '18/11/12';
-			
+
 	if( date === 'today' && typeof req.landingHTML !== 'undefined' ) {
 		$ = req.landingHTML;
 		extractOnCall();
 	} else if (date !== 'today' && typeof date !== 'undefined') {
-		var s = date.split('/');
-		var month = s[1] + '-' + s[2];
-		var day = s[0];
+		var s = date.split('/'),
+			month = s[1] + '-' + s[2],
+			day = s[0],
+			url = 'https://www.amion.com/cgi-bin/ocs?Month='+month+'&Day='+day+'&File='+req.session.file+'&Page=OnCall';
 		
-		request.get( 'https://www.amion.com/cgi-bin/ocs?Month='+month+'&Day='+day+'&File='+req.session.file+'&Page=OnCall', function( error, response, body ){
+		request.get( url, function( error, response, body ){
 			if ( error ) {
 				throw new Error(error);
 			}
@@ -73,7 +72,7 @@ function getOnCall(req, res, next) {
 			tidy(body, function(err,html){
 			
 				html = html.replace(/(\r\n|\n|\r)/gm," "); // remove carriage returns, line endings
-				
+								
 				$ = cheerio.load(html);
 				
 				req.session.file = $('input[name="File"]').attr('value');
@@ -86,6 +85,7 @@ function getOnCall(req, res, next) {
 	}
 	
 	function extractOnCall() {
+	
 		// get rows from table
 		var rows = $('table').eq(1).find('tr');
 		// shift off header row
@@ -210,7 +210,7 @@ function getPagerList(req, res, next){
 }
 
 function buildDate(req, res, next) {
-	req.date = day+'/'+month+'/'+year;
+	req.date = req.params.day+'/'+req.params.month+'/'+req.params.year.toString().substr(-2);
 	next();
 }
 
@@ -267,7 +267,7 @@ app.post('/sendPage', function(req, res){
 	sendPage();
 });
 
-app.get('/onCall/:day/:month/:year', buildDate, getOnCall, function(req,res) {
+app.get('/onCall/:day/:month/:year', buildDate, refreshFile, getOnCall, function(req,res) {
 	res.send({onCall: req.onCall, onCallTeams: req.onCallTeams});
 });
 
