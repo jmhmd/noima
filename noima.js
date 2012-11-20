@@ -53,6 +53,7 @@ function getOnCall(req, res, next) {
 	var onCallTeams,
 		onCall = [],
 		date = (typeof req.date !== 'undefined') ? req.date : 'today',
+		rawHtml,
 		$;
 
 	if( date === 'today' && typeof req.landingHTML !== 'undefined' ) {
@@ -72,6 +73,7 @@ function getOnCall(req, res, next) {
 			tidy(body, function(err,html){
 			
 				html = html.replace(/(\r\n|\n|\r)/gm," "); // remove carriage returns, line endings
+				rawHtml = html;
 								
 				$ = cheerio.load(html);
 				
@@ -156,6 +158,12 @@ function getOnCall(req, res, next) {
 			
 		req.onCall = onCall;
 		req.onCallTeams = onCallTeams;
+		
+		if ( onCall === [] ) {
+			console.log($);
+			console.log(rows);
+			console.log(rawHtml);
+		}
 				
 		next();
 	}
