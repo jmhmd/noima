@@ -37,6 +37,11 @@
 	#datePicker {
 		margin-left: 100px;
 	}
+	.dateArrow {
+		cursor: pointer;
+		height: 30px;
+		width: 30px;
+	}
 	</style>
 	
 </head>
@@ -67,57 +72,58 @@
 				</form>
 			</div>
 		</div>
-		<div class="span7">
+		<div class="span7" id="onCallContainer">
 			<legend class="noborder">
 				On Call
-				<span id="datePicker" class="muted"><span id="dateArrowLeft" class="large"><</span> Today <span id="dateArrowRight" class="large">></span></span>
+				<span id="datePicker" class="muted pull-right">
+					<span id="spinner"></span>
+					<img id="dateArrowLeft" class="dateArrow" src="/img/larr.png">
+					<span id="dateText">Today</span>
+					<img id="dateArrowRight" class="dateArrow" src="/img/rarr.png">
+				</span>
 			</legend>
 			<div id="onCall" class="well">
-				<table class="table">
-				<tbody>
-				<% for (var key in onCallTeams) {
-					var team = onCallTeams[key]; %>
-					<tr>
-						<th colspan="4"><%= team.name %></th>
-					</tr>
-					<% if(team.people) {
-						team.people.forEach(function(person, index){ %>
-						<tr class="inverse-well">
-						<td><%= person.name %>&nbsp;&nbsp;<small class="muted"><%= person.service %></small></td>
-						<td><%= person.training %></td>
-						<td>
-							<% if ( person.contact.number.indexOf("UMMS") === -1 ) { %>
-								<span class="muted">b</span><% } %><%= person.contact.number %>
-						</td>
-						<td>
-							<% if ( person.contact.number.indexOf("UMMS") === -1 ) { %>
-								<button class="btn btn-mini pageButton" pageName="<%= person.name %>">Page</button>
-							<% } %>
-						</td>
-					</tr>
-					<% }); } %>
-				<% }; %>
-				</tbody>
-				</table>
 				
-				</ul>
 			</div>
 		</div>
 	</div>
 </div>
-    <!--<div id="onCall">
-        <% onCall.forEach(function(person, index){ %>
-            <li><%= person.name %></li>
-        <% }); %>
-    </div>
-    <div id="pagerList">
-		<% pagerList.Mercy.forEach(function(person, index){ %>
-			<li><%= person.name %>, <%= person.url %></li>
-		<% }); %>
-	</div>-->
+   
+<!-- Templates -->
+<script type="text/template" id="onCall_template">
+<table class="table">
+<tbody>
+{[ for (var key in onCallTeams) {
+	var team = onCallTeams[key]; ]}
+	<tr>
+	<th colspan="4">{{ team.name }}</th>
+	</tr>
+	{[ if(team.people) {
+		team.people.forEach(function(person, index){ ]}
+		<tr class="inverse-well">
+		<td>{{ person.name }}&nbsp;&nbsp;<small class="muted">{{ person.service }}</small></td>
+		<td>{{ person.training }}</td>
+		<td>
+			{[ if ( person.contact.number.indexOf("UMMS") === -1 ) { ]}
+				<span class="muted">b</span>{[ } ]}{{ person.contact.number }}
+		</td>
+		<td>
+			{[ if ( person.contact.number.indexOf("UMMS") === -1 ) { ]}
+				<button class="btn btn-mini pageButton" pageName="{{ person.name }}">Page</button>
+			{[ } ]}
+		</td>
+	</tr>
+	{[ }); } ]}
+{[ }; ]}
+</tbody>
+</table>
+</script>
 	
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="/js/underscore.min.js"></script>
 <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/spin.min.js"></script>
+<script type="text/javascript" src="/js/spin.jquery.js"></script>
 <script type="text/javascript">
 $(function() {
 
@@ -127,14 +133,21 @@ var pageForm = $('#pageForm'),
 	pageTo = $('input#To'),
 	pageFrom = $('input#From'),
 	nameList = <%- JSON.stringify(nameList) %>,
-	pageButton = $('.pageButton'),
+	onCallTeamList = <%- JSON.stringify(onCallTeams) %>,
+	onCallLists = {},
 	day,
 	month,
-	year;
+	year,
+	onCallList_tmpl,
+	date = today = new Date();
+			
+_.templateSettings = {
+	evaluate : /\{\[([\s\S]+?)\]\}/g,
+	interpolate : /\{\{([\s\S]+?)\}\}/g
+};
+onCallList_tmpl = _.template($('#onCall_template').html());
 	
-var date = new Date();
-	
-pageForm.bind('submit', function(e) {
+pageForm.on('submit', function(e) {
 	e.preventDefault();
 	
 	var params = {
@@ -164,7 +177,7 @@ pageForm.bind('submit', function(e) {
 	}, 'json');
 });
 
-pageButton.bind('click', function(e) {
+$('#onCallContainer').on('click', '.pageButton', function(e) {
 	var pageName = $(this).attr('pageName');
 	pageTo.val(pageName);
 	if( pageFrom.val() === '' ) {
@@ -174,14 +187,32 @@ pageButton.bind('click', function(e) {
 	}
 });
 
-$('#dateArrowLeft').bind('click', function(e) {
-	// get previous calendar day
-	date = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
+$('.dateArrow').on('click', function(e) {
+	// get calendar day
+	if ( $(this).attr('id') === 'dateArrowLeft' ) {
+		date = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
+	} else {
+		date = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
+	}
 	
-	$.get('/onCall/'+date.getDate()+'/'+(date.getMonth() + 1)+'/'+date.getFullYear(), function(response) {
-		console.log(response);
-	}, 'json');
+	if ( typeof onCallLists[date] === 'undefined' ) {
+	// this date's list hasn't been fetched yet - fetch and cache it
+		$('#spinner').spin({ lines: 8, length: 4, width: 3, radius: 5, top: '10px', left: '-25px'});
+		$.get('/onCall/'+date.getDate()+'/'+(date.getMonth() + 1)+'/'+date.getFullYear(), function(response) {
+			onCallLists[date] = onCallList_tmpl({onCallTeams: response.onCallTeams});
+			$('#onCall').html(onCallLists[date]);
+			$('#spinner').spin(false);
+		}, 'json');
+	} else {
+		$('#onCall').html(onCallLists[date]);
+	}
+		
+	updateDateText(date);
 });
+
+function updateDateText(date) {
+	$('#dateText').text((date.getMonth() + 1)+'/'+date.getDate()+'/'+date.getFullYear());
+};
 
 // To input typeahead
 $('#To').typeahead({
@@ -190,6 +221,11 @@ $('#To').typeahead({
 
 // immediately bring focus to "To" field
 $('#To').focus();
+
+// fill onCall list
+onCallLists[date] = onCallList_tmpl({onCallTeams: onCallTeamList});
+$('#onCall').html(onCallLists[date]);
+updateDateText(date);
 
 });
 </script>
