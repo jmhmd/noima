@@ -71,7 +71,11 @@ function getOnCall(req, res, next) {
 			}
 			
 			tidy(body, function(err,html){
-			
+				
+				if ( err ) {
+					throw new Error(err);
+				}
+				
 				html = html.replace(/(\r\n|\n|\r)/gm," "); // remove carriage returns, line endings
 				rawHtml = html;
 								
@@ -80,6 +84,9 @@ function getOnCall(req, res, next) {
 				req.session.file = $('input[name="File"]').attr('value');
 				
 				console.log('file:'+req.session.file);
+				if(typeof req.session.file == 'undefined'){
+					console.log($);
+				}
 				
 				extractOnCall();
 			});
