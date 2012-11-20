@@ -79,6 +79,8 @@ function getOnCall(req, res, next) {
 				
 				req.session.file = $('input[name="File"]').attr('value');
 				
+				console.log('file:'+req.session.file);
+				
 				extractOnCall();
 			});
 		});
@@ -160,7 +162,6 @@ function getOnCall(req, res, next) {
 		req.onCallTeams = onCallTeams;
 		
 		console.log(onCall);
-		console.log(rawHtml);
 				
 		next();
 	}
