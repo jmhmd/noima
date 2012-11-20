@@ -85,7 +85,7 @@ function getOnCall(req, res, next) {
 				
 				console.log('file:'+req.session.file);
 				if(typeof req.session.file == 'undefined'){
-					console.log($);
+					console.log($.html());
 				}
 				
 				extractOnCall();
