@@ -159,11 +159,8 @@ function getOnCall(req, res, next) {
 		req.onCall = onCall;
 		req.onCallTeams = onCallTeams;
 		
-		if ( onCall === [] ) {
-			console.log($);
-			console.log(rows);
-			console.log(rawHtml);
-		}
+		console.log(onCall);
+		console.log(rawHtml);
 				
 		next();
 	}
