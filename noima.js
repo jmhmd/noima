@@ -53,7 +53,6 @@ function getOnCall(req, res, next) {
 	var onCallTeams,
 		onCall = [],
 		date = (typeof req.date !== 'undefined') ? req.date : 'today',
-		rawHtml,
 		$;
 
 	if( date === 'today' && typeof req.landingHTML !== 'undefined' ) {
@@ -64,6 +63,8 @@ function getOnCall(req, res, next) {
 			month = s[1] + '-' + s[2],
 			day = s[0],
 			url = 'https://www.amion.com/cgi-bin/ocs?Month='+month+'&Day='+day+'&File='+req.session.file+'&Page=OnCall';
+			
+		console.log('first file:'+req.session.file);
 		
 		request.get( url, function( error, response, body ){
 			if ( error ) {
@@ -77,7 +78,6 @@ function getOnCall(req, res, next) {
 				}
 				
 				html = html.replace(/(\r\n|\n|\r)/gm," "); // remove carriage returns, line endings
-				rawHtml = html;
 								
 				$ = cheerio.load(html);
 				
@@ -85,6 +85,7 @@ function getOnCall(req, res, next) {
 				
 				console.log('file:'+req.session.file);
 				if(typeof req.session.file == 'undefined'){
+					console.log('html:');
 					console.log($.html());
 				}
 				
@@ -167,9 +168,7 @@ function getOnCall(req, res, next) {
 			
 		req.onCall = onCall;
 		req.onCallTeams = onCallTeams;
-		
-		console.log(onCall);
-				
+						
 		next();
 	}
 }
