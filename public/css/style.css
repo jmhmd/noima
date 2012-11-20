@@ -1,0 +1,61 @@
+#amionLogo {
+	position: relative;
+    top: -4px;
+}
+.dropdown-menu .active > a, .dropdown-menu .active > a:hover {
+	background-color: #D2EDFA;
+	background-image: none;
+}
+tr.inverse-well { 
+	border: 1px solid #DDDDDD;
+	border-radius: 4px 4px 4px 4px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.055);
+	display: table-row;
+	line-height: 20px;
+	padding: 4px;
+	transition: all 0.2s ease-in-out 0s;
+	background: white;
+}
+.table th, .table td { 
+	border: none;
+	vertical-align: middle;
+}
+.table th {
+	padding-left: 0px;
+}
+td.resident { color: #0000ff; }
+td.psych { color: #7F007F; }
+td.mercy { color: #ff0000; }
+td.attending { color: #007F00; }
+td.sub-i { color: #aa0000; }
+legend .noborder {
+	border: 0px;
+	margin-bottom: 0px;
+}
+#datePicker {
+	margin-left: 100px;
+}
+.dateArrow {
+	display: inline-block;
+	position: relative;
+	top: 8px;
+	cursor: pointer;
+}
+.dateArrow a {
+	height: 30px; 
+	width: 30px; 
+	display: block;
+	background: url('/img/arrows.png') no-repeat;
+}
+.arrowLeft a {
+	background-position: 0px -30px;
+}
+.arrowRight a {
+	background-position: -30px -30px;
+}
+.arrowLeft a:hover {
+	background-position: 0px 0px;
+}
+.arrowRight a:hover {
+	background-position: -30px 0px;
+}
