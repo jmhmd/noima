@@ -38,10 +38,30 @@
 		margin-left: 100px;
 	}
 	.dateArrow {
+		display: inline-block;
+		position: relative;
+		top: 8px;
 		cursor: pointer;
-		height: 30px;
-		width: 30px;
 	}
+	.dateArrow a {
+		height: 30px; 
+		width: 30px; 
+		display: block;
+		background: url('/img/arrows.png') no-repeat;
+	}
+	.arrowLeft a {
+		background-position: 0px -30px;
+	}
+	.arrowRight a {
+		background-position: -30px -30px;
+	}
+	.arrowLeft a:hover {
+		background-position: 0px 0px;
+	}
+	.arrowRight a:hover {
+		background-position: -30px 0px;
+	}
+	
 	</style>
 	
 </head>
@@ -77,9 +97,9 @@
 				On Call
 				<span id="datePicker" class="muted pull-right">
 					<span id="spinner"></span>
-					<img id="dateArrowLeft" class="dateArrow" src="/img/larr.png">
+					<span id="dateArrowLeft" class="dateArrow arrowLeft"><a href="#"></a></span>
 					<span id="dateText">Today</span>
-					<img id="dateArrowRight" class="dateArrow" src="/img/rarr.png">
+					<span id="dateArrowRight" class="dateArrow arrowRight"><a href="#"></a></span>
 				</span>
 			</legend>
 			<div id="onCall" class="well">
@@ -188,6 +208,7 @@ $('#onCallContainer').on('click', '.pageButton', function(e) {
 });
 
 $('.dateArrow').on('click', function(e) {
+	e.preventDefault();
 	// get calendar day
 	if ( $(this).attr('id') === 'dateArrowLeft' ) {
 		date = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
