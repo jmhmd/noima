@@ -31,7 +31,15 @@ function refreshFile(req, res, next){
 	request.post( 'http://amion.com/cgi-bin/ocs', {form: {Login: 'mercymed'}},
 		function( error, response, body ){
 			
+			if(error) {
+				throw new Error(error);
+			}
+			
 			tidy(body, function(err,html){
+			
+				if(err) {
+					throw new Error(err);
+				}
 				
 				var html = html.replace(/(\r\n|\n|\r)/gm," "); // remove carriage returns, line endings
 				
@@ -42,6 +50,10 @@ function refreshFile(req, res, next){
 				req.landingHTML = $;
 				
 				console.log('refreshFile:'+req.session.file);
+				if(typeof req.session.file == 'undefined'){
+					console.log('htmlrefreshfile:');
+					console.log($.html());
+				}
 				
 				next();
 			
