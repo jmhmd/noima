@@ -28,18 +28,18 @@ var nameList = [];
 
 //-----------Functions----------------//
 function refreshFile(req, res, next){
+	console.log('hello refreshfile');
 	request.post( 'http://amion.com/cgi-bin/ocs', {form: {Login: 'mercymed'}},
 		function( error, response, body ){
 			
-			if(error) {
-				console.log('error:'+error);
-			}
+			console.log('error:'+error);
+			console.log('response:'+response);
+			console.log('body:'+body);
 			
 			tidy(body, function(err,html){
 			
-				if(err) {
-					console.log('err:'+err);
-				}
+				console.log('err:'+err);
+				console.log('html:'+html);
 				
 				var html = html.replace(/(\r\n|\n|\r)/gm," "); // remove carriage returns, line endings
 				
