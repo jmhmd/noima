@@ -41,6 +41,8 @@ function refreshFile(req, res, next){
 				req.session.file = $('input[name="File"]').attr('value');
 				req.landingHTML = $;
 				
+				console.log('refreshFile:'+req.session.file);
+				
 				next();
 			
 			});
@@ -54,6 +56,9 @@ function getOnCall(req, res, next) {
 		onCall = [],
 		date = (typeof req.date !== 'undefined') ? req.date : 'today',
 		$;
+		
+	console.log('session:');
+	console.log(req.session);
 
 	if( date === 'today' && typeof req.landingHTML !== 'undefined' ) {
 		$ = req.landingHTML;
