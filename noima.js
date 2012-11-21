@@ -52,7 +52,7 @@ function refreshFile(req, res, next){
 				console.log('refreshFile:'+req.session.file);
 				if(typeof req.session.file == 'undefined'){
 					console.log('htmlrefreshfile:');
-					console.log($.html());
+					console.log(html);
 				}
 				
 				next();
