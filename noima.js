@@ -34,12 +34,12 @@ function refreshFile(req, res, next){
 			
 			console.log('error:'+error);
 			console.log('response:'+response);
-			console.log('body:'+body);
+			console.log('body:'+body.substr(0,20));
 			
 			tidy(body, function(err,html){
 			
 				console.log('err:'+err);
-				console.log('html:'+html);
+				console.log('html:'+html.substr(0,20));
 				
 				var html = html.replace(/(\r\n|\n|\r)/gm," "); // remove carriage returns, line endings
 				
@@ -52,7 +52,7 @@ function refreshFile(req, res, next){
 				console.log('refreshFile:'+req.session.file);
 				if(typeof req.session.file == 'undefined'){
 					console.log('htmlrefreshfile:');
-					console.log(html);
+					console.log(html.substr(0,20));
 				}
 				
 				next();
