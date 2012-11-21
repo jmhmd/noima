@@ -32,13 +32,13 @@ function refreshFile(req, res, next){
 		function( error, response, body ){
 			
 			if(error) {
-				throw new Error(error);
+				console.log('error:'+error);
 			}
 			
 			tidy(body, function(err,html){
 			
 				if(err) {
-					throw new Error(err);
+					console.log('err:'+err);
 				}
 				
 				var html = html.replace(/(\r\n|\n|\r)/gm," "); // remove carriage returns, line endings
@@ -80,8 +80,6 @@ function getOnCall(req, res, next) {
 			month = s[1] + '-' + s[2],
 			day = s[0],
 			url = 'https://www.amion.com/cgi-bin/ocs?Month='+month+'&Day='+day+'&File='+req.session.file+'&Page=OnCall';
-			
-		console.log('first file:'+req.session.file);
 		
 		request.get( url, function( error, response, body ){
 			if ( error ) {
@@ -99,12 +97,6 @@ function getOnCall(req, res, next) {
 				$ = cheerio.load(html);
 				
 				req.session.file = $('input[name="File"]').attr('value');
-				
-				console.log('file:'+req.session.file);
-				if(typeof req.session.file == 'undefined'){
-					console.log('html:');
-					console.log($.html());
-				}
 				
 				extractOnCall();
 			});
@@ -240,6 +232,7 @@ function getPagerList(req, res, next){
 
 function buildDate(req, res, next) {
 	req.date = req.params.day+'/'+req.params.month+'/'+req.params.year.toString().substr(-2);
+	console.log('req.date:'+req.date);
 	next();
 }
 
