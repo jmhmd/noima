@@ -21,25 +21,42 @@ app.set('view engine', 'html');
 //-----------Application logic --------------//
 
 //var file = "";
-var onCall = [];
-var pagerList = {};
-var nameList = [];
+var onCall = [],
+	pagerList = {},
+	nameList = [],
+	timeToRefresh = 5 * 60; // time to wait before refreshing file in seconds
 
 
 //-----------Functions----------------//
 function refreshFile(req, res, next){
 	console.log('hello refreshfile');
+	
+	var timeNow = new Date(),
+		refreshDate = new Date( req.session.fileRefreshDate ),
+		timeSinceRefresh = ( timeNow - refreshDate ) / 1000; // time in seconds since last file refresh
+	
+	console.log(refreshDate);
+	console.log(timeNow);
+	console.log(timeSinceRefresh);
+	
+	if ( timeSinceRefresh < timeToRefresh && typeof req.session.file !== 'undefined' ) {
+	// if file is less than 5 minutes old and file is in fact defined, nothing to do here.
+		console.log('dont refresh');
+		return next();
+	}
+	
 	request.post( 'http://amion.com/cgi-bin/ocs', {form: {Login: 'mercymed'}},
 		function( error, response, body ){
-			
-			console.log('error:'+error);
-			console.log('response:'+response);
-			console.log('body:'+body.substr(0,20));
+		
+			if ( error ) {
+				res.send({error: 'Could not get amion.com content: '+error});
+			}
 			
 			tidy(body, function(err,html){
 			
-				console.log('err:'+err);
-				console.log('html:'+html.substr(0,20));
+				if ( err || html === '' ) {
+					res.send({error: 'Could not parse amion.com content: '+err});
+				}
 				
 				var html = html.replace(/(\r\n|\n|\r)/gm," "); // remove carriage returns, line endings
 				
@@ -47,6 +64,7 @@ function refreshFile(req, res, next){
 				
 				// set file, I think this is like a session cookie?
 				req.session.file = $('input[name="File"]').attr('value');
+				req.session.fileRefreshDate = new Date();
 				req.landingHTML = $;
 				
 				console.log('refreshFile:'+req.session.file);
@@ -95,9 +113,7 @@ function getOnCall(req, res, next) {
 				html = html.replace(/(\r\n|\n|\r)/gm," "); // remove carriage returns, line endings
 								
 				$ = cheerio.load(html);
-				
-				req.session.file = $('input[name="File"]').attr('value');
-				
+								
 				extractOnCall();
 			});
 		});
@@ -238,7 +254,7 @@ function buildDate(req, res, next) {
 
 //-----------Routing ------------------------//
 
-app.post('/sendPage', function(req, res){
+app.post('/sendPage', refreshFile, function(req, res){
 	// To: takes valid name in "last, first" format, last 4 digits, or full pager number with or without hyphens
 	// From: free text, spaces replaced by periods
 	// Note: maxlength 240?
@@ -247,9 +263,8 @@ app.post('/sendPage', function(req, res){
 	function sendPage() {
 		var To = req.param('To'),
 			From = req.param('From'),
-			Note = req.param('Note'),
-			retry = 0;
-		
+			Note = req.param('Note');
+			
 		request.get({
 					url: 'https://www.amion.com/cgi-bin/ocs',
 					qs: { 
@@ -269,14 +284,7 @@ app.post('/sendPage', function(req, res){
 						res.send({ success: false, msg: error });
 					} else {
 						if ( typeof body === 'undefined' || body.indexOf('Accepted') === -1 ) {
-							if ( req.session.retry === 1 ) {
-								req.session.retry = 0;
-								res.send({ success: false, msg: 'Page could not be sent.' });
-							} else {
-								console.log('Page not sent. Refreshing file...');
-								req.session.retry = 1;
-								refreshFile(req, res, sendPage);
-							}
+							res.send({ success: false, msg: 'Page could not be sent.' });
 						} else { // all's well, page sent
 							console.log( 'Page sent to '+To+'.' );
 							res.send({ success: true, msg: 'Page sent to '+To+'.' });
