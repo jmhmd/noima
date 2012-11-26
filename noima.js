@@ -275,7 +275,7 @@ app.post('/sendPage', function(req, res){
 							} else {
 								console.log('Page not sent. Refreshing file...');
 								req.session.retry = 1;
-								refreshFile(req, sendPage);
+								refreshFile(req, res, sendPage);
 							}
 						} else { // all's well, page sent
 							console.log( 'Page sent to '+To+'.' );
