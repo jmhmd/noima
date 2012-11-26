@@ -85,10 +85,7 @@ function getOnCall(req, res, next) {
 	var onCallTeams,
 		onCall = [],
 		date = (typeof req.date !== 'undefined') ? req.date : 'today',
-		$;
-		
-	console.log('session:');
-	console.log(req.session);
+		$;	
 
 	if( date === 'today' && typeof req.landingHTML !== 'undefined' ) {
 		$ = req.landingHTML;

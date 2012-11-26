@@ -58,34 +58,35 @@
 <script type="text/template" id="onCall_template">
 <table class="table">
 <tbody>
-{[ for (var key in onCallTeams) {
-	var team = onCallTeams[key]; ]}
+<* for (var key in this.onCallTeams) {
+	var team = this.onCallTeams[key]; *>
 	<tr>
-	<th colspan="4">{{ team.name }}</th>
+	<th colspan="4"><*= this.team.name *></th>
 	</tr>
-	{[ if(team.people) {
-		team.people.forEach(function(person, index){ ]}
+	<* if( this.team.people ) {
+		this.team.people.forEach( function( person, index ){ *>
 		<tr class="inverse-well">
-		<td class="{{ person.training.toLowerCase() }}">{{ person.name }}&nbsp;&nbsp;<small class="muted">{{ person.service }}</small></td>
-		<td>{{ person.training }}</td>
+		<td class="<*= person.training.toLowerCase() *>"><*= person.name *>&nbsp;&nbsp;<small class="muted"><*= person.service *></small></td>
+		<td><*= person.training *></td>
 		<td>
-			{[ if ( person.contact.number.indexOf("UMMS") === -1 ) { ]}
-				<span class="muted">b</span>{[ } ]}{{ person.contact.number }}
+			<* if ( person.contact.number.indexOf("UMMS") === -1 ) { *>
+				<span class="muted">b</span><* } *><*= person.contact.number *>
 		</td>
 		<td>
-			{[ if ( person.contact.number.indexOf("UMMS") === -1 ) { ]}
-				<button class="btn btn-mini pageButton" pageName="{{ person.name }}">Page</button>
-			{[ } ]}
+			<* if ( person.contact.number.indexOf("UMMS") === -1 ) { *>
+				<button class="btn btn-mini pageButton" pageName="<*= person.name *>">Page</button>
+			<* } *>
 		</td>
 	</tr>
-	{[ }); } ]}
-{[ }; ]}
+	<* }); } *>
+<* }; *>
 </tbody>
 </table>
 </script>
 	
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
-<script type="text/javascript" src="js/underscore.min.js"></script>
+<!--<script type="text/javascript" src="js/underscore.min.js"></script>-->
+<script type="text/javascript" src="js/jquery.jqote2.min.js"></script>
 <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/spin.min.js"></script>
 <script type="text/javascript" src="js/spin.jquery.js"></script>
@@ -103,14 +104,10 @@ var pageForm = $('#pageForm'),
 	day,
 	month,
 	year,
-	onCallList_tmpl,
+	onCallListTmpl,
 	date = today = new Date();
 			
-_.templateSettings = {
-	evaluate : /\{\[([\s\S]+?)\]\}/g,
-	interpolate : /\{\{([\s\S]+?)\}\}/g
-};
-onCallList_tmpl = _.template($('#onCall_template').html());
+onCallListTmpl = $.jqotec('#onCall_template', '*');
 	
 pageForm.on('submit', function(e) {
 	e.preventDefault();
@@ -165,7 +162,7 @@ $('.dateArrow').on('click', function(e) {
 	// this date's list hasn't been fetched yet - fetch and cache it
 		$('#spinner').spin({ lines: 8, length: 4, width: 3, radius: 5, top: '10px', left: '-25px'});
 		$.get('/onCall/'+date.getDate()+'/'+(date.getMonth() + 1)+'/'+date.getFullYear(), function(response) {
-			onCallLists[date] = onCallList_tmpl({onCallTeams: response.onCallTeams});
+			onCallLists[date] = onCallListTmpl({onCallTeams: response.onCallTeams});
 			$('#onCall').html(onCallLists[date]);
 			$('#spinner').spin(false);
 		}, 'json');
@@ -189,7 +186,7 @@ $('#To').typeahead({
 $('#To').focus();
 
 // fill onCall list
-onCallLists[date] = onCallList_tmpl({onCallTeams: onCallTeamList});
+onCallLists[date] = onCallListTmpl({onCallTeams: onCallTeamList});
 $('#onCall').html(onCallLists[date]);
 updateDateText(date);
 
