@@ -34,12 +34,10 @@ function refreshFile(req, res, next){
 	var timeNow = new Date(),
 		refreshDate = new Date( req.session.fileRefreshDate ),
 		timeSinceRefresh = ( timeNow - refreshDate ) / 1000; // time in seconds since last file refresh
+
+	console.log('time since refresh: '+timeSinceRefresh);
 	
-	console.log(refreshDate);
-	console.log(timeNow);
-	console.log(timeSinceRefresh);
-	
-	if ( timeSinceRefresh < timeToRefresh && typeof req.session.file !== 'undefined' ) {
+	if ( req.route.path !== '/' && timeSinceRefresh < timeToRefresh && typeof req.session.file !== 'undefined' ) {
 	// if file is less than 5 minutes old and file is in fact defined, nothing to do here.
 		console.log('dont refresh');
 		return next();
@@ -84,13 +82,13 @@ function getOnCall(req, res, next) {
 	
 	var onCallTeams,
 		onCall = [],
-		date = (typeof req.date !== 'undefined') ? req.date : 'today',
+		date = (typeof req.date !== 'undefined' ) ? req.date : 'today',
 		$;	
 
 	if( date === 'today' && typeof req.landingHTML !== 'undefined' ) {
 		$ = req.landingHTML;
 		extractOnCall();
-	} else if (date !== 'today' && typeof date !== 'undefined') {
+	} else if ( date !== 'today' && typeof date !== 'undefined') {
 		var s = date.split('/'),
 			month = s[1] + '-' + s[2],
 			day = s[0],
@@ -245,7 +243,7 @@ function getPagerList(req, res, next){
 
 function buildDate(req, res, next) {
 	req.date = req.params.day+'/'+req.params.month+'/'+req.params.year.toString().substr(-2);
-	console.log('req.date:'+req.date);
+	console.log('Get Date:'+req.date);
 	next();
 }
 
@@ -294,7 +292,7 @@ app.post('/sendPage', refreshFile, function(req, res){
 	sendPage();
 });
 
-app.get('/onCall/:day/:month/:year', buildDate, refreshFile, getOnCall, function(req,res) {
+app.get('/onCall/:day/:month/:year', buildDate, refreshFile, getOnCall, function(req, res) {
 	res.send({onCall: req.onCall, onCallTeams: req.onCallTeams});
 });
 
