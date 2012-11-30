@@ -1,4 +1,4 @@
-noima
+Better Amion
 =====
 
-Amion If It Didn't Suck
+What Amion could be if it didn't suck so bad.
