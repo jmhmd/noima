@@ -140,13 +140,13 @@ function getOnCall(req, res, next) {
 		});
 		
 		function assignService(person, team) {
-			if( person.service.indexOf('Med Con' === -1) &&
-				person.service.indexOf('Med '+team) > -1 ||
-				person.service.indexOf('Resident '+team) > -1 ) {
+			if( (person.service.indexOf('Med '+team) > -1 ||
+				person.service.indexOf('Resident '+team) > -1) &&
+				person.service.indexOf('Med Con') < 0 ) {
 				return true;
 			};
 		};
-		
+				
 		// group onCall by service
 		onCallTeams = {
 				MAO: {

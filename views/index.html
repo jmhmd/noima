@@ -72,13 +72,13 @@
 	<* if( team.people ) {
 		$.each( team.people, function( index, person ) { *>
 		<tr class="inverse-well">
-		<td class="<*= person.training.toLowerCase() *>"><*= person.name *>&nbsp;&nbsp;<small class="muted"><*= person.service *></small></td>
+		<td class="<*= person.training.toLowerCase() *> first"><*= person.name *>&nbsp;&nbsp;<small class="muted"><*= person.service *></small></td>
 		<td><*= person.training *></td>
 		<td>
 			<* if ( person.contact.number.indexOf("UMMS") === -1 ) { *>
 				<span class="muted">b</span><* } *><*= person.contact.number *>
 		</td>
-		<td>
+		<td class="last">
 			<* if ( person.contact.number.indexOf("UMMS") === -1 ) { *>
 				<button class="btn btn-mini pageButton" pageName="<*= person.name *>">Page</button>
 			<* } *>
