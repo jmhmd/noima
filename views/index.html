@@ -6,8 +6,13 @@
 	
 	<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+	
+	<!-- Le positioning shim, for IE6-8 aberrant element positions -->
+	<!--[if lt IE 8]>
+		<link href="css/ie.css" rel="stylesheet">
+	<![endif]-->
 	
 </head>
 <body>
@@ -38,15 +43,15 @@
 			</div>
 		</div>
 		<div class="span7" id="onCallContainer">
-			<legend class="noborder">
+			<div class="legendLike">
 				On Call
-				<span id="datePicker" class="muted pull-right">
+				<div id="datePicker" class="muted">
 					<span id="spinner"></span>
 					<span id="dateArrowLeft" class="dateArrow arrowLeft"><a href="#"></a></span>
 					<span id="dateText">Today</span>
 					<span id="dateArrowRight" class="dateArrow arrowRight"><a href="#"></a></span>
-				</span>
-			</legend>
+				</div>
+			</div>
 			<div id="onCall" class="well">
 				
 			</div>
@@ -65,7 +70,7 @@
 	<th colspan="4"><*= team.name *></th>
 	</tr>
 	<* if( team.people ) {
-		team.people.forEach( function( person, index ){ *>
+		$.each( team.people, function( index, person ) { *>
 		<tr class="inverse-well">
 		<td class="<*= person.training.toLowerCase() *>"><*= person.name *>&nbsp;&nbsp;<small class="muted"><*= person.service *></small></td>
 		<td><*= person.training *></td>
@@ -78,7 +83,7 @@
 				<button class="btn btn-mini pageButton" pageName="<*= person.name *>">Page</button>
 			<* } *>
 		</td>
-	</tr>
+		</tr>
 	<* }); } *>
 <* }; *>
 </tbody>
@@ -87,7 +92,6 @@
 </script>
 	
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
-<!--<script type="text/javascript" src="js/underscore.min.js"></script>-->
 <script type="text/javascript" src="js/jquery.jqote2.min.js"></script>
 <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/spin.min.js"></script>

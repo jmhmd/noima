@@ -140,7 +140,8 @@ function getOnCall(req, res, next) {
 		});
 		
 		function assignService(person, team) {
-			if( person.service.indexOf('Med '+team) > -1 ||
+			if( person.service.indexOf('Med Con' === -1) &&
+				person.service.indexOf('Med '+team) > -1 ||
 				person.service.indexOf('Resident '+team) > -1 ) {
 				return true;
 			};
@@ -175,6 +176,10 @@ function getOnCall(req, res, next) {
 				dayFloat: {
 					name: "Day Float",
 					people: onCall.filter(function(person){ if(person.service.indexOf('Day Float') !== -1) return true; })
+				},
+				medCon: {
+					name: "Med Con",
+					people: onCall.filter(function(person){ if(person.service.indexOf('Med Con') !== -1) return true; })
 				},
 				nightFloat: {
 					name: "Night Float",
