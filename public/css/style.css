@@ -1,7 +1,11 @@
 #amionLogo {
 	position: relative;
     top: -4px;
-}
+	}
+#title span {
+	font-size: 14px;
+	font-weight: normal;
+	}
 #onCall {
 	clear: both;
 	}
