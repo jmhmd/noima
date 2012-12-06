@@ -1,0 +1,17 @@
+.dateArrow {
+	top: 4px;
+	}
+tr.inverse-well td {
+	border-style: solid;
+	border-color: #dddddd;
+	border-width: 1px 0 1px 0;
+	}
+tr.inverse-well td.first {
+	border-left-width: 1px;
+	}
+tr.inverse-well td.last {
+	border-right-width: 1px;
+	}
+button {
+	border: 1px solid #333333;
+	}
