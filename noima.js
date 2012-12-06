@@ -307,23 +307,32 @@ var onCallTeams,
 	pagerList = {},
 	nameList = [],
 	file = "",
-	timeToRefresh = 5 * 60, // time to wait before refreshing file in seconds
-	timeNow = new Date(),
-	refreshDate = new Date( req.session.fileRefreshDate ),
-	timeSinceRefresh = ( timeNow - refreshDate ) / 1000; // time in seconds since last file refresh
+	timeToRefresh = 5 * 60 * 60, // time to wait before refreshing file in minutes
+	appInitTime = moment(),
+	lastRefresh = false;
+	//timeSinceRefresh = false; // time in seconds since last file refresh
+	
+getPagerList(function(result) {
+// this should stay relatively static. May only need to recheck daily or monthly
+	pagerList = result.pagerList;
+});
 	
 // on app init, get file def, start amion.com connection loop
-
 setTimeout( function() {
 // this will fetch the main amion site, extract the oncall info,
 // and cache the file and oncall peeps
 	refreshFile(function($) {
 		extractOnCall($, function(result) {
-			refreshDate = new Date();
+			lastRefresh = moment();
 			onCallTeams = result.onCallTeams;
 		});
 	});
-}, 300000);
+	
+	// check if it's a new day
+	if ( moment().format('D') !== lastRefresh.format('D') ) {
+		//emit event?
+	}
+}, timeToRefresh);
 
 
 var port = process.env.PORT || 5000;

@@ -6,7 +6,8 @@
 	"cheerio": "0.10.x",
 	"ejs": "0.8.x",
 	"htmltidy": "0.0.2",
-	"request": "2.11.x"
+	"request": "2.11.x",
+	"moment": "1.7.x"	
   },
   "engines": {
     "node": "0.8.x",
