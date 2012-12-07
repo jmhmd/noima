@@ -129,8 +129,8 @@ function extractOnCall( $, callback ) {
 			person.service.indexOf('Resident '+team) > -1) &&
 			person.service.indexOf('Med Con') < 0 ) {
 			return true;
-		};
-	};
+		}
+	}
 	
 	onCallTeams = {
 			MAO: {
@@ -232,9 +232,21 @@ function getPagerList( callback ){
 
 // build date string from request parameters
 function buildDate(req, res, next) {
-	req.date = req.params.day+'/'+req.params.month+'/'+req.params.year.toString().substr(-2);
-	console.log('Get Date:'+req.date);
+	//req.date = req.params.day+'/'+req.params.month+'/'+req.params.year.toString().substr(-2);
+	req.date = {
+        day: req.params.day,
+        month: req.params.month,
+        year: req.params.year
+	};
+    console.log('Get Date:'+req.date);
 	next();
+}
+
+function refreshPagerList() {
+// this should stay relatively static. May only need to recheck daily or monthly
+    getPagerList(function(result) {
+        pagerList = result.pagerList;
+    });
 }
 
 //-----------Routing ------------------------//
@@ -282,58 +294,72 @@ app.post('/sendPage', function(req, res){
 	sendPage();
 });
 
-app.get('/onCall/:day/:month/:year', buildDate, getOnCall, function(req, res) {
-	res.send({onCall: req.onCall, onCallTeams: req.onCallTeams});
+app.get('/onCall/:day/:month/:year', buildDate, function(req, res) {
+    // need to get oncall for arbitrary day
+    
+    fetchArbCallDay(req.date, function($){
+        extractOnCall($, function(result){
+            res.send({
+                onCallTeams: result.onCallTeams
+            });
+        });
+    });
 });
 
-app.get('/', getOnCall, getPagerList, function(req, res) {
-// Plow through all these functions to init the app, get all the basic
-// information to display the page. Will need to figure out what can
-// be cached in-app vs. client side in the future to reduce requests
-// to amion.com
+app.get('/', function(req, res) {
+// Basic info for index page should be cached. Serve it up
 	
 	
 	//console.log(pagerList);
 	//console.log(onCallTeams);
 	
-	res.render('index', { onCall: req.onCall, onCallTeams: req.onCallTeams, pagerList: req.pagerList, nameList: req.nameList });
+	res.render('index', { 
+            onCallTeams: appData.onCallTeams, 
+            pagerList: appData.pagerList, 
+            nameList: appData.nameList 
+        });
 
 });
 
 //-----------Application logic --------------//
 
 // things to cache in the app
-var onCallTeams,
-	pagerList = {},
-	nameList = [],
-	file = "",
-	timeToRefresh = 5 * 60 * 60, // time to wait before refreshing file in minutes
-	appInitTime = moment(),
-	lastRefresh = false;
+var appData = {
+        onCallTeams: false,
+        pagerList: {},
+        nameList: [],
+        file: "",
+        timeToRefresh: 5 * 60 * 60, // time to wait before refreshing file in minutes
+        appInitTime: moment(),
+        lastRefresh: false
+    };
 	//timeSinceRefresh = false; // time in seconds since last file refresh
 	
-getPagerList(function(result) {
-// this should stay relatively static. May only need to recheck daily or monthly
-	pagerList = result.pagerList;
-});
-	
 // on app init, get file def, start amion.com connection loop
+
+function appRefresh() {
+    appData.refreshFile(function($) {
+        extractOnCall($, function(result) {
+			appData.lastRefresh = moment();
+			appData.onCallTeams = result.onCallTeams;
+		});
+	});
+}
 setTimeout( function() {
 // this will fetch the main amion site, extract the oncall info,
 // and cache the file and oncall peeps
-	refreshFile(function($) {
-		extractOnCall($, function(result) {
-			lastRefresh = moment();
-			onCallTeams = result.onCallTeams;
-		});
-	});
+	appRefresh();
 	
 	// check if it's a new day
-	if ( moment().format('D') !== lastRefresh.format('D') ) {
-		//emit event?
+	if ( moment().format('D') !== appData.lastRefresh.format('D') ) {
+		emitter.emit('new_day');
 	}
 }, timeToRefresh);
 
+emitter.on('new_day', refreshPagerList);
+
+//-----------Init App ---------//
+appRefresh();
 
 var port = process.env.PORT || 5000;
 app.listen(port, function() {
