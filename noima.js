@@ -3,7 +3,9 @@ var express = require('express'),
     cheerio = require('cheerio'),
     request = require('request'),
     tidy = require('htmltidy').tidy,
-	moment = require('moment');
+	moment = require('moment'),
+    EventEmitter = require('events').EventEmitter,
+    fs = require('fs');
     
 // setup middleware
 
@@ -37,36 +39,40 @@ function cleanHTML( rawHTML, callback ) {
 		
 		callback($);
 		
-	}
+	});
 }
 
 
 // refreshFile( function($) {...} ); $ = amion.com landing page HTML loaded into cheerio
 function refreshFile(callback){
-	console.log('hello refreshfile');
+	console.log('Refreshing File...');
 	
 	request.post( 'http://amion.com/cgi-bin/ocs', {form: {Login: 'mercymed'}},
 		function( error, response, body ){
 		
 			if ( error ) {
-			console.log('Could not get amion.com content: '+error);
+                console.log('Could not get amion.com content: '+error);
 			}
 			
 			cleanHTML(body, function($){
 				
 				// set file, I think this is like a session cookie?
-				file = $('input[name="File"]').attr('value');
-				fileRefreshDate = new Date();
-				
-				console.log('refreshFile: '+file);
-				if(typeof file == 'undefined'){
-					console.log('htmlrefreshfile:');
-					console.log(html.substr(0,20));
-				}
-				
-				if(typeof callback !== 'undefined') {
-					callback($);
-				}
+				appData.file = $('input[name="File"]').attr('value');
+                
+                if (typeof appData.file === 'undefined') {
+                // something went wrong, try again
+                    console.log('file is empty, retry');
+                    console.log('Landing page HTML:');
+                    console.log($.html().substr(0,20));
+                    refreshFile(callback);
+                    return false;
+                } else {
+                    console.log('refreshFile: '+appData.file);
+                    
+                    if(typeof callback !== 'undefined') {
+                        callback($);
+                    }
+                }
 			
 			});
 		});
@@ -78,7 +84,7 @@ function fetchArbCallDay( date, callback ) {
 	
 	var month = date.month + '-' + date.year,
 		day = date.day,
-		url = 'https://www.amion.com/cgi-bin/ocs?Month='+month+'&Day='+day+'&File='+req.session.file+'&Page=OnCall';
+		url = 'https://www.amion.com/cgi-bin/ocs?Month='+month+'&Day='+day+'&File='+appData.file+'&Page=OnCall';
 	
 	request.get( url, function( error, response, body ){
 		if ( error ) {
@@ -97,7 +103,8 @@ function extractOnCall( $, callback ) {
 // req.date format DD/MM/YY
 	
 	var onCallTeams,
-		onCall = [];
+		onCall = [],
+        result = {};
 	
 	
 	// get rows from table
@@ -105,7 +112,6 @@ function extractOnCall( $, callback ) {
 	// shift off header row
 	[].shift.call(rows);
 	
-	/* -- kind of ridiculous way to store table
 	rows.each(function(index, row) {
 		var person = {};
 		person.name = $(row).find('a.plain').find('nobr').text().trim();
@@ -121,7 +127,6 @@ function extractOnCall( $, callback ) {
 			};
 		onCall.push(person);
 	});
-	*/
 	
 	// group onCall by service
 	function assignService(person, team) {
@@ -190,13 +195,14 @@ function getPagerList( callback ){
 	var result = {},
 		pagerList = {},
 		nameList = [];
+        
+    //console.log('file before pager req: '+appData.file);
 	
-	request.get( 'https://www.amion.com/cgi-bin/ocs?File='+ req.session.file +'&Syr=2012&Page=Pgrsel&Rsel=-1',
+	request.get( 'https://www.amion.com/cgi-bin/ocs?File='+ appData.file +'&Syr=2012&Page=Pgrsel&Rsel=-1',
 		function( error, response, body ){
-			//console.log(body);
+			//console.log('body: '+body);
 			
-			cleanHTML(body, function($){
-				
+			cleanHTML(body, function($){				
 				var selects = [];
 				
 				for (var i = 1; i < 10; i++) {
@@ -243,9 +249,11 @@ function buildDate(req, res, next) {
 }
 
 function refreshPagerList() {
-// this should stay relatively static. May only need to recheck daily or monthly
+// pager list should stay relatively static. May only need to recheck daily or monthly
     getPagerList(function(result) {
-        pagerList = result.pagerList;
+        appData.pagerList = result.pagerList;
+        appData.nameList = result.nameList;
+        console.log('got pager list and name list.');
     });
 }
 
@@ -265,7 +273,7 @@ app.post('/sendPage', function(req, res){
 		request.get({
 					url: 'https://www.amion.com/cgi-bin/ocs',
 					qs: { 
-						File: req.session.file,
+						File: appData.file,
 						Page: 'Alphapg', 
 						//Rsel: '5', 
 						Syr: '2012',
@@ -332,34 +340,52 @@ var appData = {
         timeToRefresh: 5 * 60 * 60, // time to wait before refreshing file in minutes
         appInitTime: moment(),
         lastRefresh: false
-    };
+    },
+    emitter = new EventEmitter();
 	//timeSinceRefresh = false; // time in seconds since last file refresh
 	
 // on app init, get file def, start amion.com connection loop
 
-function appRefresh() {
-    appData.refreshFile(function($) {
+function appRefresh(callback) {
+    console.log('calling refreshFile...');
+    refreshFile(function($) {
+        console.log('calling extractOnCall, file: '+appData.file);
         extractOnCall($, function(result) {
-			appData.lastRefresh = moment();
+            console.log('got onCallTeams.');
 			appData.onCallTeams = result.onCallTeams;
+            
+            // call callback function
+            if (typeof callback !== 'undefined'){
+                callback();
+            }
 		});
 	});
 }
+
+/*
 setTimeout( function() {
 // this will fetch the main amion site, extract the oncall info,
 // and cache the file and oncall peeps
+    console.log("Refresh file");
 	appRefresh();
+    appData.lastRefresh = moment();
 	
 	// check if it's a new day
 	if ( moment().format('D') !== appData.lastRefresh.format('D') ) {
+        console.log("It's a new day! Refresh stuff");
 		emitter.emit('new_day');
 	}
-}, timeToRefresh);
+
+}, appData.timeToRefresh);
+*/
 
 emitter.on('new_day', refreshPagerList);
 
 //-----------Init App ---------//
-appRefresh();
+appRefresh(function(){
+// using callback will ensure a file has been defined
+    refreshPagerList();
+});
 
 var port = process.env.PORT || 5000;
 app.listen(port, function() {
