@@ -337,7 +337,7 @@ var appData = {
         pagerList: {},
         nameList: [],
         file: "",
-        timeToRefresh: 5 * 60 * 1000, // time to wait before refreshing file in minutes
+        timeToRefresh: 9.75 * 60 * 1000, // time to wait before refreshing file in milliseconds
         appInitTime: moment(),
         lastRefresh: false
     },
