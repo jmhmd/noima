@@ -337,7 +337,7 @@ var appData = {
         pagerList: {},
         nameList: [],
         file: "",
-        timeToRefresh: 5 * 60 * 60, // time to wait before refreshing file in minutes
+        timeToRefresh: 5 * 60 * 1000, // time to wait before refreshing file in minutes
         appInitTime: moment(),
         lastRefresh: false
     },
@@ -362,30 +362,29 @@ function appRefresh(callback) {
 	});
 }
 
-/*
-setTimeout( function() {
-// this will fetch the main amion site, extract the oncall info,
-// and cache the file and oncall peeps
-    console.log("Refresh file");
-	appRefresh();
-    appData.lastRefresh = moment();
-	
-	// check if it's a new day
-	if ( moment().format('D') !== appData.lastRefresh.format('D') ) {
-        console.log("It's a new day! Refresh stuff");
-		emitter.emit('new_day');
-	}
-
-}, appData.timeToRefresh);
-*/
-
 emitter.on('new_day', refreshPagerList);
 
+(function loopFunction() {
+// this will fetch the main amion site, extract the oncall info,
+// and cache the file and oncall peeps
+    console.log("Refresh app");
+	appRefresh(function(){
+	// placing logic in callback will ensure new "file" has been found and loaded
+	// prior to placing new requests for data from amion.com
+	
+		// check if it's a new day
+		if ( appData.lastRefresh === false || moment().format('D') !== appData.lastRefresh.format('D') ) {
+			console.log("It's a new day! Refresh stuff");
+			emitter.emit('new_day');
+		}
+		
+		appData.lastRefresh = moment();
+		
+		setTimeout( loopFunction, appData.timeToRefresh );
+	});
+}());
+
 //-----------Init App ---------//
-appRefresh(function(){
-// using callback will ensure a file has been defined
-    refreshPagerList();
-});
 
 var port = process.env.PORT || 5000;
 app.listen(port, function() {
