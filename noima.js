@@ -244,7 +244,7 @@ function buildDate(req, res, next) {
         month: req.params.month,
         year: req.params.year
 	};
-    console.log('Get Date:'+req.date);
+    console.log('Get Date:'+req.day+'/'+req.month+'/'+req.year);
 	next();
 }
 
