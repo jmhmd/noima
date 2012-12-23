@@ -1,7 +1,11 @@
 #amionLogo {
 	position: relative;
     top: -4px;
-}
+	}
+#title span {
+	font-size: 14px;
+	font-weight: normal;
+	}
 #onCall {
 	clear: both;
 	}
@@ -23,10 +27,13 @@
     width: 100%;
 	position: relative;
 	}
+/*
 .dropdown-menu .active > a, .dropdown-menu .active > a:hover {
 	background-color: #D2EDFA;
 	background-image: none;
+	color: #333;
 }
+*/
 tr.inverse-well { 
 	border: 1px solid #DDDDDD;
 	border-radius: 4px 4px 4px 4px;
