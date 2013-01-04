@@ -111,6 +111,7 @@
 <script type="text/javascript" src="bootstrap-2.2.2/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/spin.min.js"></script>
 <script type="text/javascript" src="js/spin.jquery.js"></script>
+<script type="text/javascript" src="js/async.js"></script>
 <script type="text/javascript">
 $(function() {
 
@@ -136,30 +137,40 @@ pageForm.on('submit', function(e) {
     /* Here will go logic to send multi-pages */
 	
 	var params = {
-		To: pageTo.val(),
 		From: pageFrom.val(),
 		Note: pageNote.val()
 	};
+    
+    function sendPage( to, from, note, callback ) {
 		
-	$.post('/sendPage', params, function(response) {
-		if(response.success) {
-		// page successful
-			pageAlert
-				.removeClass('alert-error')
-				.addClass('alert-success')
-				.text(response.msg)
-				.fadeIn().delay(5000).fadeOut();
-			pageNote.val('');
-			pageTo.val('').focus();
-		} else {
-		// page unsuccessful
-			pageAlert
-				.removeClass('alert-success')
-				.addClass('alert-error')
-				.text(response.msg)
-				.fadeIn().delay(5000).fadeOut();
-		}
-	}, 'json');
+    	$.post('/sendPage', params, function(response) {
+    		if(response.success) {
+    		// page successful
+                callback(null, response);
+    			/*
+                pageAlert
+    				.removeClass('alert-error')
+    				.addClass('alert-success')
+    				.text(response.msg)
+    				.fadeIn().delay(5000).fadeOut();
+    			pageNote.val('');
+    			pageTo.val('').focus();
+                */
+    		} else {
+    		// page unsuccessful
+                callback('page not sent', response);
+                /*
+    			pageAlert
+    				.removeClass('alert-success')
+    				.addClass('alert-error')
+    				.text(response.msg)
+    				.fadeIn().delay(5000).fadeOut();
+                */
+    		}
+    	}, 'json');
+    }
+    
+    async
 });
 
 $('#onCallContainer').on('click', '.pageButton', function(e) {
