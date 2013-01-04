@@ -137,40 +137,79 @@ pageForm.on('submit', function(e) {
     /* Here will go logic to send multi-pages */
 	
 	var params = {
+		To: '',
 		From: pageFrom.val(),
 		Note: pageNote.val()
 	};
     
-    function sendPage( to, from, note, callback ) {
+    function sendPage( to, callback ) {
+		console.log('send to:');
+		console.log(to);
+		
+		params.To = to;
 		
     	$.post('/sendPage', params, function(response) {
     		if(response.success) {
     		// page successful
                 callback(null, response);
-    			/*
-                pageAlert
-    				.removeClass('alert-error')
-    				.addClass('alert-success')
-    				.text(response.msg)
-    				.fadeIn().delay(5000).fadeOut();
-    			pageNote.val('');
-    			pageTo.val('').focus();
-                */
     		} else {
     		// page unsuccessful
-                callback('page not sent', response);
-                /*
-    			pageAlert
-    				.removeClass('alert-success')
-    				.addClass('alert-error')
-    				.text(response.msg)
-    				.fadeIn().delay(5000).fadeOut();
-                */
+                callback(null, response);
     		}
     	}, 'json');
     }
     
-    async
+    async.map( recipientList, sendPage, function(err, response){
+		console.log('async response:');
+		console.log(response);
+		
+		var successful = [],
+			failed = [],
+			alert = '';
+		
+		if (err) {
+			pageAlert
+				.removeClass('alert-success')
+				.addClass('alert-error')
+				.text(err)
+				.fadeIn().delay(5000).fadeOut();
+		} else {
+			$.each(response, function(i, item){
+				if (item.success) {
+					successful.push(item);
+				} else {
+					failed.push(item);
+				}
+			});
+			
+			if (successful.length > 0) {
+				var alertPrefix = successful.length > 1 ? 'Sent pages to ' : 'Sent page to ';
+				alert = alertPrefix +
+						successful.map(function(item){
+							return item.to;
+						})
+						.join(', ');
+				pageAlert
+					.removeClass('alert-error')
+					.addClass('alert-success')
+					.text(alert)
+					.fadeIn().delay(5000).fadeOut();
+				pageNote.val('');
+				pageTo.val('').focus();
+			} else if (failed.length > 0)  {
+				alert = 'Could not send pages to '+
+						failed.map(function(item){
+							return item.to;
+						})
+						.join(', ');
+				pageAlert
+					.removeClass('alert-success')
+					.addClass('alert-error')
+					.text(alert)
+					.fadeIn().delay(5000).fadeOut();
+			}
+		}
+	});
 });
 
 $('#onCallContainer').on('click', '.pageButton', function(e) {
