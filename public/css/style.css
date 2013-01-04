@@ -89,3 +89,8 @@ legend .noborder {
 .arrowRight a:hover {
 	background-position: -30px 0px;
 }
+.to-tile {
+    float: left;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}

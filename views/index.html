@@ -31,6 +31,7 @@
 						<legend>Send a Page</legend>
 						<div id="pageAlert" class="alert" style="display:none"></div>
 						<label>To:</label>
+                        <div id="toList"></div>
 						<input id="To" type="text" autocomplete="off" class="span5">
 						<label>From:</label>
 						<input id="From" type="text" class="span5">
@@ -61,6 +62,8 @@
 </div>
    
 <!-- Templates -->
+
+<!-- template for On Call list -->
 <script type="text/x-jqote-template" id="onCall_template">
 <![CDATA[
 <table class="table">
@@ -91,6 +94,16 @@
 </table>
 ]]>
 </script>
+
+<!-- template for To tile -->
+<script type="text/x-jqote-template" id="toTile_template">
+<![CDATA[
+<div class="alert alert-info to-tile">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <span class="tileRecipient"><*= this.name *></span>
+</div>
+]]>
+</script>
 	
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
 <!--<script type="text/javascript" src="js/jquery-ui-1.9.2.custom/js/jquery-ui-1.9.2.custom.js"></script>-->
@@ -98,6 +111,7 @@
 <script type="text/javascript" src="bootstrap-2.2.2/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/spin.min.js"></script>
 <script type="text/javascript" src="js/spin.jquery.js"></script>
+<script type="text/javascript" src="js/async.js"></script>
 <script type="text/javascript">
 $(function() {
 
@@ -113,36 +127,50 @@ var pageForm = $('#pageForm'),
 	month,
 	year,
 	onCallListTmpl = $.jqotec('#onCall_template', '*'),
+    toTileTmpl = $.jqotec('#toTile_template', '*'),
+    recipientList = [],
 	date = today = new Date();
 	
 pageForm.on('submit', function(e) {
 	e.preventDefault();
+    
+    /* Here will go logic to send multi-pages */
 	
 	var params = {
-		To: pageTo.val(),
 		From: pageFrom.val(),
 		Note: pageNote.val()
 	};
+    
+    function sendPage( to, from, note, callback ) {
 		
-	$.post('/sendPage', params, function(response) {
-		if(response.success) {
-		// page successful
-			pageAlert
-				.removeClass('alert-error')
-				.addClass('alert-success')
-				.text(response.msg)
-				.fadeIn().delay(5000).fadeOut();
-			pageNote.val('');
-			pageTo.val('').focus();
-		} else {
-		// page unsuccessful
-			pageAlert
-				.removeClass('alert-success')
-				.addClass('alert-error')
-				.text(response.msg)
-				.fadeIn().delay(5000).fadeOut();
-		}
-	}, 'json');
+    	$.post('/sendPage', params, function(response) {
+    		if(response.success) {
+    		// page successful
+                callback(null, response);
+    			/*
+                pageAlert
+    				.removeClass('alert-error')
+    				.addClass('alert-success')
+    				.text(response.msg)
+    				.fadeIn().delay(5000).fadeOut();
+    			pageNote.val('');
+    			pageTo.val('').focus();
+                */
+    		} else {
+    		// page unsuccessful
+                callback('page not sent', response);
+                /*
+    			pageAlert
+    				.removeClass('alert-success')
+    				.addClass('alert-error')
+    				.text(response.msg)
+    				.fadeIn().delay(5000).fadeOut();
+                */
+    		}
+    	}, 'json');
+    }
+    
+    async
 });
 
 $('#onCallContainer').on('click', '.pageButton', function(e) {
@@ -185,7 +213,28 @@ function updateDateText(date) {
 
 // To input typeahead
 $('#To').typeahead({
-	source: nameList
+	source: nameList,
+    updater: function(item) {
+            itemTile = $.jqote(toTileTmpl, {name: item});
+            $('#toList').append(itemTile);
+            // add name to recipient list
+            recipientList.push(item);
+            return '';
+        }
+});
+
+$('#toList').on('close','.to-tile',function(){
+    var toRemove = $(this).find('.tileRecipient').html(),
+        recIndex = $.inArray( toRemove, recipientList );
+    console.log('remove: '+toRemove);
+    
+    if ( recIndex > -1) {
+    // it exists as a tile, remove it
+        recipientList.splice(recIndex,1);
+    } else {
+    // not added as tile, something went wrong
+        console.log('not a tile, what happened?');
+    }
 });
 
 // immediately bring focus to "To" field

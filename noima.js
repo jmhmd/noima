@@ -3,7 +3,7 @@ var express = require('express'),
     cheerio = require('cheerio'),
     request = require('request'),
     tidy = require('htmltidy').tidy,
-	moment = require('moment'),
+    moment = require('moment'),
     EventEmitter = require('events').EventEmitter,
     fs = require('fs');
     
@@ -30,7 +30,7 @@ function cleanHTML( rawHTML, callback ) {
 	tidy(rawHTML, function(err,html){
 			
 		if ( err || html === '' ) {
-			console.log('Could not parse amion.com content: '+err);
+			console.log('Parsing error: '+err);
 		}
 		
 		html = html.replace(/(\r\n|\n|\r)/gm," "); // remove carriage returns, line endings
@@ -386,7 +386,7 @@ emitter.on('new_day', refreshPagerList);
 
 //-----------Init App ---------//
 
-var port = process.env.PORT || 5000;
+var port = process.env.PORT || 5050;
 app.listen(port, function() {
   console.log("Listening on " + port);
 });
