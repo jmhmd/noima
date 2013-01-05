@@ -30,9 +30,9 @@
 					<fieldset>
 						<legend>Send a Page</legend>
 						<div id="pageAlert" class="alert" style="display:none"></div>
-						<label>To:</label>
+						<label>To:<a id="clearTo" style="display:none">Clear</a></label>
                         <div id="toList"></div>
-						<input id="To" type="text" autocomplete="off" class="span5">
+						<input id="To" type="text" placeholder=" Add recipient..." autocomplete="off" class="span5">
 						<label>From:</label>
 						<input id="From" type="text" class="span5">
 						<label>Message:</label>
@@ -108,7 +108,7 @@
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
 <!--<script type="text/javascript" src="js/jquery-ui-1.9.2.custom/js/jquery-ui-1.9.2.custom.js"></script>-->
 <script type="text/javascript" src="js/jquery.jqote2.min.js"></script>
-<script type="text/javascript" src="bootstrap-2.2.2/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="bootstrap-2.2.2/js/bootstrap.custom.min.js"></script>
 <script type="text/javascript" src="js/spin.min.js"></script>
 <script type="text/javascript" src="js/spin.jquery.js"></script>
 <script type="text/javascript" src="js/async.js"></script>
@@ -120,6 +120,7 @@ var pageForm = $('#pageForm'),
 	pageNote = $('textarea#Note'),
 	pageTo = $('input#To'),
 	pageFrom = $('input#From'),
+	clearTo = $('#clearTo'),
 	nameList = <%- JSON.stringify(nameList) %>,
 	onCallTeamList = <%- JSON.stringify(onCallTeams) %>,
 	onCallLists = {},
@@ -181,10 +182,8 @@ pageForm.on('submit', function(e) {
 					failed.push(item);
 				}
 			});
-			
 			if (successful.length > 0) {
-				var alertPrefix = successful.length > 1 ? 'Sent pages to ' : 'Sent page to ';
-				alert = alertPrefix +
+				alert += 'Sent page to ' +
 						successful.map(function(item){
 							return item.to;
 						})
@@ -192,22 +191,26 @@ pageForm.on('submit', function(e) {
 				pageAlert
 					.removeClass('alert-error')
 					.addClass('alert-success')
-					.text(alert)
-					.fadeIn().delay(5000).fadeOut();
-				pageNote.val('');
-				pageTo.val('').focus();
-			} else if (failed.length > 0)  {
-				alert = 'Could not send pages to '+
+			}
+			if (failed.length > 0)  {
+				if (successful.length > 0) alert += '<br />'
+				alert += 'Could not send page to '+
 						failed.map(function(item){
 							return item.to;
 						})
 						.join('; ');
-				pageAlert
-					.removeClass('alert-success')
-					.addClass('alert-error')
-					.text(alert)
-					.fadeIn().delay(5000).fadeOut();
+				if (successful.length === 0) {
+				// only turn alert red if all failed
+					pageAlert
+						.removeClass('alert-success')
+						.addClass('alert-error')
+				}	
 			}
+			pageAlert
+				.html(alert)
+				.fadeIn().delay(5000).fadeOut();
+			pageNote.val('');
+			pageTo.val('').focus();
 		}
 	});
 });
@@ -248,20 +251,38 @@ $('.dateArrow').on('click', function(e) {
 
 function updateDateText(date) {
 	$('#dateText').text((date.getMonth() + 1)+'/'+date.getDate()+'/'+date.getFullYear());
-};
+}
 
-// To input typeahead
-$('#To').typeahead({
-	source: nameList,
-    updater: function(item) {
-            itemTile = $.jqote(toTileTmpl, {name: item});
-            $('#toList').append(itemTile);
-            // add name to recipient list
-            recipientList.push(item);
-            return '';
-        }
-});
+// Add recipient tile
+function addToTile(recipient) {
+	itemTile = $.jqote(toTileTmpl, {name: recipient});
+    $('#toList').append(itemTile);
+    // add name to recipient list
+    recipientList.push(recipient);
+	clearTo.show();
+    return '';
+}
 
+// To input typeahead definition and events
+$('#To')
+	.typeahead({
+		source: nameList,
+	    updater: function(item) {
+				addToTile(item);
+	        }
+	})
+	.on('keypress', function(e) {
+		if (e.which === 13) e.preventDefault()	
+	})
+	.on('unmatched', function(e) {
+		var val = $(this).val()
+		e.preventDefault()
+		if ( val === '' || val.length < 4 ) return
+		addToTile(val)
+		return $(this).val('')
+	})
+
+// Tile removal event handler
 $('#toList').on('close','.to-tile',function(){
     var toRemove = $(this).find('.tileRecipient').html(),
         recIndex = $.inArray( toRemove, recipientList );
@@ -274,7 +295,15 @@ $('#toList').on('close','.to-tile',function(){
     // not added as tile, something went wrong
         console.log('not a tile, what happened?');
     }
+	if (recipientList.length === 0) clearTo.hide()
 });
+
+// Clear all recipient tiles
+$('#clearTo').on('click', function(e) {
+	$('#toList').empty()
+	recipientList = []
+	clearTo.hide()
+})
 
 // immediately bring focus to "To" field
 $('#To').focus();
