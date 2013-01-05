@@ -263,6 +263,7 @@ app.post('/sendPage', function(req, res){
 	// To: takes valid name in "last, first" format, last 4 digits, or full pager number with or without hyphens
 	// From: free text, spaces replaced by periods
 	// Note: maxlength 240?
+	console.log('request body:');
 	console.log(req.body);
 	
 	function sendPage() {
@@ -289,10 +290,10 @@ app.post('/sendPage', function(req, res){
 						res.send({ success: false, msg: error });
 					} else {
 						if ( typeof body === 'undefined' || body.indexOf('Accepted') === -1 ) {
-							res.send({ success: false, msg: 'Page could not be sent.' });
+							res.send({ success: false, msg: 'Page could not be sent.', to: To });
 						} else { // all's well, page sent
 							console.log( 'Page sent to '+To+'.' );
-							res.send({ success: true, msg: 'Page sent to '+To+'.' });
+							res.send({ success: true, msg: 'Page sent to '+To+'.', to: To });
 						}
 					}
 				}
@@ -386,7 +387,7 @@ emitter.on('new_day', refreshPagerList);
 
 //-----------Init App ---------//
 
-var port = process.env.PORT || 5050;
+var port = process.env.PORT || 5000;
 app.listen(port, function() {
   console.log("Listening on " + port);
 });

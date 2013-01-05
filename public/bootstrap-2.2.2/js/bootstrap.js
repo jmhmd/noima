@@ -1958,7 +1958,13 @@
 
         case 9: // tab
         case 13: // enter
-          if (!this.shown) return
+          if (!this.shown) {
+					// User hit enter when a value not in list present in input.
+					// trigger custom event
+						if (this.$element.val() === '' ) return
+						this.$element.trigger('unmatched')
+						return
+					}
           this.select()
           break
 
