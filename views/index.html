@@ -188,7 +188,7 @@ pageForm.on('submit', function(e) {
 						successful.map(function(item){
 							return item.to;
 						})
-						.join(', ');
+						.join('; ');
 				pageAlert
 					.removeClass('alert-error')
 					.addClass('alert-success')
@@ -201,7 +201,7 @@ pageForm.on('submit', function(e) {
 						failed.map(function(item){
 							return item.to;
 						})
-						.join(', ');
+						.join('; ');
 				pageAlert
 					.removeClass('alert-success')
 					.addClass('alert-error')
