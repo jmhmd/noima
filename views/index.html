@@ -38,7 +38,10 @@
 						<label>Message:</label>
 						<textarea id="Note" rows="3" class="span5"></textarea>
 						<div class="form-actions">
-							<button type="submit" class="btn btn-primary span4" style="float:left">Send</button>
+							<button type="submit" class="btn btn-primary span4" style="float:left">
+								Send
+								<div id="sendSpinner"></div>
+							</button>
 						</div>
 					</fieldset>
 				</form>
@@ -123,6 +126,7 @@ var pageForm = $('#pageForm'),
 	pageTo = $('input#To'),
 	pageFrom = $('input#From'),
 	clearTo = $('#clearTo'),
+	sendSpinner = $('#sendSpinner'),
 	nameList = <%- JSON.stringify(nameList) %>,
 	onCallTeamList = <%- JSON.stringify(onCallTeams) %>,
 	onCallLists = {},
@@ -135,15 +139,15 @@ var pageForm = $('#pageForm'),
 	date = today = new Date();
 	
 pageForm.on('submit', function(e) {
-	e.preventDefault();
+	e.preventDefault()
     
-    /* Here will go logic to send multi-pages */
+	sendSpinner.spin({ lines: 10, length: 5, width: 2, radius: 4})
 	
 	var params = {
 		To: '',
 		From: pageFrom.val(),
 		Note: pageNote.val()
-	};
+	}
     
     function sendPage( to, callback ) {
 		console.log('send to:');
@@ -163,12 +167,12 @@ pageForm.on('submit', function(e) {
     }
     
     async.map( recipientList, sendPage, function(err, response){
-		console.log('async response:');
-		console.log(response);
 		
 		var successful = [],
 			failed = [],
 			alert = '';
+			
+		sendSpinner.spin(false)
 		
 		if (err) {
 			pageAlert

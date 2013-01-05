@@ -98,3 +98,7 @@ legend .noborder {
 	font-size: 12px;
 	margin-left: 10px;
 }
+#sendSpinner {
+	float: right;
+	margin-top: 10px;
+}

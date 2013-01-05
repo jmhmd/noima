@@ -1,6 +1,6 @@
 {
   "name": "noima",
-  "version": "0.0.1",
+  "version": "0.1.2",
   "dependencies": {
     "express": "3.0.x",
 	"cheerio": "0.10.x",
