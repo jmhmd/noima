@@ -1914,7 +1914,11 @@
     }
 
   , move: function (e) {
-      if (!this.shown) return
+	  // if no match and input is empty, don't prevent any default
+	  // functionality. If input isn't empty, prevent tabbing out
+	  // as this will prevent 'keyup' from firing on the input
+	  // element on tab press
+      if (!this.shown && this.$element.val() === '') return
 
       switch(e.keyCode) {
         case 9: // tab
@@ -1959,7 +1963,7 @@
         case 9: // tab
         case 13: // enter
           if (!this.shown) {
-					// User hit enter when a value not in list present in input.
+					// User hit enter or tab when a value not in list present in input.
 					// trigger custom event
 						if (this.$element.val() === '' ) return
 						this.$element.trigger('unmatched')
