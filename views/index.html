@@ -15,6 +15,23 @@
 		<link href="css/ie.css" rel="stylesheet">
 	<![endif]-->
 	
+	<!--[if lte IE 7]>
+	<style type="text/css">
+	/* Fix for recipient tiles so the don't look so
+	// fucking stupid in internet explorer */
+		.to-tile {
+			float: none;
+			margin-bottom: 5px;
+			clear: right;
+		}
+	/* Fix for send button spinner in the wrong
+	// fucking place in internet explorer */
+		#sendSpinner {
+			top: 5px;
+		}
+	</style>
+	<![endif]-->
+
 </head>
 <body>
 <div class="container">
@@ -38,10 +55,8 @@
 						<label>Message:</label>
 						<textarea id="Note" rows="3" class="span5"></textarea>
 						<div class="form-actions">
-							<button type="submit" class="btn btn-primary span4" style="float:left">
-								Send
-								<div id="sendSpinner"></div>
-							</button>
+							<button type="submit" class="btn btn-primary span4" style="float:left">Send</button>
+							<div id="sendSpinner"></div>
 						</div>
 					</fieldset>
 				</form>
@@ -141,7 +156,7 @@ var pageForm = $('#pageForm'),
 pageForm.on('submit', function(e) {
 	e.preventDefault()
     
-	sendSpinner.spin({ lines: 10, length: 5, width: 2, radius: 4})
+	sendSpinner.spin({ lines: 10, length: 5, width: 2, radius: 4, color: '#fff'})
 	
 	var params = {
 		To: '',
@@ -190,7 +205,7 @@ pageForm.on('submit', function(e) {
 			});
 			if (successful.length > 0) {
 				alert += 'Sent page to ' +
-						successful.map(function(item){
+						$.map( successful, function(item){
 							return item.to;
 						})
 						.join('; ');
@@ -201,7 +216,7 @@ pageForm.on('submit', function(e) {
 			if (failed.length > 0)  {
 				if (successful.length > 0) alert += '<br />'
 				alert += 'Could not send page to '+
-						failed.map(function(item){
+						$.map( failed, function(item){
 							return item.to;
 						})
 						.join('; ');

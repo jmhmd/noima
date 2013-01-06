@@ -99,6 +99,7 @@ legend .noborder {
 	margin-left: 10px;
 }
 #sendSpinner {
-	float: right;
-	margin-top: 10px;
+	position: relative;
+	right: -40px;
+	top: 15px;
 }
