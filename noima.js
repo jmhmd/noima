@@ -202,7 +202,7 @@ function getPagerList( callback ){
 		function( error, response, body ){
 			//console.log('body: '+body);
 			
-			cleanHTML(body, function($){				
+			cleanHTML(body, function($){
 				var selects = [];
 				
 				for (var i = 1; i < 10; i++) {
