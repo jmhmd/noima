@@ -263,8 +263,12 @@ app.post('/sendPage', function(req, res){
 	// To: takes valid name in "last, first" format, last 4 digits, or full pager number with or without hyphens
 	// From: free text, spaces replaced by periods
 	// Note: maxlength 240?
+	// Delay: in milliseconds
 	console.log('request body:');
 	console.log(req.body);
+	
+	var Delay = req.param('Delay') || 0;
+	Delay = Number(Delay);
 	
 	function sendPage() {
 		var To = req.param('To'),
@@ -300,7 +304,11 @@ app.post('/sendPage', function(req, res){
 		);
 	}
 	
-	sendPage();
+	if ( Delay > 0 ) {
+		setTimeout( sendPage, Delay );
+	} else {
+		sendPage();
+	}
 });
 
 app.get('/onCall/:day/:month/:year', buildDate, function(req, res) {
