@@ -170,8 +170,6 @@ pageForm.on('submit', function(e) {
 	}
     
     function sendPage( to, callback ) {
-		console.log('send to:');
-		console.log(to);
 		
 		params.To = to;
 		
@@ -312,14 +310,12 @@ $('#To')
 $('#toList').on('close','.to-tile',function(){
     var toRemove = $(this).find('.tileRecipient').html(),
         recIndex = $.inArray( toRemove, recipientList );
-    console.log('remove: '+toRemove);
     
     if ( recIndex > -1) {
     // it exists as a tile, remove it
         recipientList.splice(recIndex,1);
     } else {
     // not added as tile, something went wrong
-        console.log('not a tile, what happened?');
     }
 	if (recipientList.length === 0) clearTo.hide()
 });
