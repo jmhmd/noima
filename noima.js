@@ -308,8 +308,10 @@ app.get('/onCall/:day/:month/:year', buildDate, function(req, res) {
     
     fetchArbCallDay(req.date, function($){
         extractOnCall($, function(result){
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Access-Control-Allow-Headers", "X-Requested-With");
             res.send({
-                onCallTeams: result.onCallTeams
+              onCallTeams: result.onCallTeams
             });
         });
     });
