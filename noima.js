@@ -259,6 +259,12 @@ function refreshPagerList() {
 
 //-----------Routing ------------------------//
 
+app.all('/', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next();
+});
+
 app.post('/sendPage', function(req, res){
 	// To: takes valid name in "last, first" format, last 4 digits, or full pager number with or without hyphens
 	// From: free text, spaces replaced by periods
@@ -308,8 +314,8 @@ app.get('/onCall/:day/:month/:year', buildDate, function(req, res) {
     
     fetchArbCallDay(req.date, function($){
         extractOnCall($, function(result){
-            res.header("Access-Control-Allow-Origin", "*");
-            res.header("Access-Control-Allow-Headers", "X-Requested-With");
+            //res.header("Access-Control-Allow-Origin", "*");
+            //res.header("Access-Control-Allow-Headers", "X-Requested-With");
             res.send({
               onCallTeams: result.onCallTeams
             });
