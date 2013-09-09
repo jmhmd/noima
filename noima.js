@@ -47,7 +47,7 @@ function cleanHTML( rawHTML, callback ) {
 function refreshFile(callback){
 	console.log('Refreshing File...');
 	
-	request.post( 'http://amion.com/cgi-bin/ocs', {form: {Login: 'mercymed'}},
+	request.post( 'http://amion.com/cgi-bin/ocs', {form: {Login: 'INSERT PASSWORD HERE'}},
 		function( error, response, body ){
 		
 			if ( error ) {
